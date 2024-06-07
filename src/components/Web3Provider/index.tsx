@@ -1,29 +1,61 @@
 "use client";
 
-import { WagmiProvider, createConfig, http } from "wagmi";
-import { polygon, base } from "viem/chains";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConnectKitProvider, getDefaultConfig } from "connectkit";
+import "@rainbow-me/rainbowkit/styles.css";
+import {
+  getDefaultConfig,
+  RainbowKitProvider,
+  RainbowKitAuthenticationProvider,
+} from "@rainbow-me/rainbowkit";
+import { WagmiProvider } from "wagmi";
+import { polygon, base } from "wagmi/chains";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { getAuthenticationAdapter } from "@/lib/auth/authenticationAdapter";
+import { isAuthAction } from "@/lib/actions/auth";
 
-const config = createConfig(
-  getDefaultConfig({
-    chains: [polygon, base],
-    transports: {
-      [polygon.id]: http("https://137.rpc.thirdweb.com"),
-      [base.id]: http("https://8453.rpc.thirdweb.com"),
-    },
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
-    appName: "Token Swaps",
-  }),
-);
+const config = getDefaultConfig({
+  appName: "My RainbowKit App",
+  projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
+  chains: [polygon, base],
+  ssr: true, // If your dApp uses server side rendering (SSR)
+});
 
 const queryClient = new QueryClient();
 
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
+
+  const status = isLoading
+    ? "loading"
+    : isAuth
+      ? "authenticated"
+      : "unauthenticated";
+
+  console.log("status", status);
+
+  // Fetch user when:
+  useEffect(() => {
+    const checkStatus = async () => {
+      const { isAuth } = await isAuthAction();
+      console.log("isAuth", isAuth);
+
+      setIsAuth(isAuth);
+      setIsLoading(false);
+    };
+    checkStatus();
+  }, []);
+
+  const authAdapter = useMemo(() => {
+    return getAuthenticationAdapter(setIsAuth);
+  }, []);
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider theme="retro">{children}</ConnectKitProvider>
+        <RainbowKitAuthenticationProvider adapter={authAdapter} status={status}>
+          <RainbowKitProvider>{children}</RainbowKitProvider>
+        </RainbowKitAuthenticationProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

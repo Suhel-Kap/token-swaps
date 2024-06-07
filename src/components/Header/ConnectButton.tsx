@@ -1,7 +1,5 @@
 "use client";
-
-import { ConnectKitButton } from "connectkit";
-
-export const ConnectButton = () => {
-  return <ConnectKitButton />;
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+export const MyConnectButton = () => {
+  return <ConnectButton />;
 };
