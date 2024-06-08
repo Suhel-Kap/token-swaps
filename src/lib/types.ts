@@ -1,5 +1,5 @@
 export type TOKEN = {
-  name: string;
+  tickerName: string;
   displayName: string;
   symbol: string;
   wsname: string;
@@ -31,4 +31,22 @@ export type TickerData = {
   highPrice: string;
   lowPrice: string;
   percentage: number;
+};
+
+export type OHLCData = [
+  number, // Time
+  string, // Open
+  string, // High
+  string, // Low
+  string, // Close
+  string, // Vwap
+  string, // Volume
+  number, // Count
+];
+
+export type OHLCApiResponse = {
+  error: string[];
+  result: {
+    [key: string]: Array<OHLCData>;
+  };
 };

@@ -7,12 +7,12 @@ import Link from "next/link";
 
 export default async function PriceTableRow({ token }: { token: TOKEN }) {
   const price = await getAllTickers();
-  const priceIncreased = (price?.[token.name].percentage as number) > 0;
+  const priceIncreased = (price?.[token.tickerName].percentage as number) > 0;
 
   return (
     <TableRow>
       <TableCell>
-        <Link href={`/coin/${token.symbol}`} passHref>
+        <Link href={`/coin/${token.tickerName}`} passHref>
           <div className="flex place-items-center gap-1">
             <Image
               alt={token.displayName}
@@ -25,22 +25,22 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
         </Link>
       </TableCell>
       <TableCell>
-        <Link href={`/coin/${token.symbol}`} passHref>
+        <Link href={`/coin/${token.tickerName}`} passHref>
           {token.symbol}
         </Link>
       </TableCell>
       <TableCell
         className={`${priceIncreased ? "text-green-500" : "text-red-500"}`}
       >
-        <Link href={`/coin/${token.symbol}`} passHref>
-          ${parseFloat(price?.[token.name].price as string).toFixed(2)}
+        <Link href={`/coin/${token.tickerName}`} passHref>
+          ${parseFloat(price?.[token.tickerName].price as string).toFixed(2)}
         </Link>
       </TableCell>
       <TableCell
         className={`${priceIncreased ? "text-green-500" : "text-red-500"}`}
       >
-        <Link href={`/coin/${token.symbol}`} passHref>
-          {price?.[token.name].percentage.toFixed(2)}%
+        <Link href={`/coin/${token.tickerName}`} passHref>
+          {price?.[token.tickerName].percentage.toFixed(2)}%
         </Link>
       </TableCell>
       <TableCell>

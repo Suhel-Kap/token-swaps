@@ -32,13 +32,10 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
       ? "authenticated"
       : "unauthenticated";
 
-  console.log("status", status);
-
   // Fetch user when:
   useEffect(() => {
     const checkStatus = async () => {
       const { isAuth } = await isAuthAction();
-      console.log("isAuth", isAuth);
 
       setIsAuth(isAuth);
       setIsLoading(false);

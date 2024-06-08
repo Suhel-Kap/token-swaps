@@ -5,36 +5,37 @@ export const COOKIE_KEYS = {
 };
 
 export const TICKER_REVALIDATION_TIME_IN_SECONDS = 60;
+export const OHLC_REVALIDATION_TIME_IN_SECONDS = 60 * 60;
 
 export const KRAKEN_PUBLIC_URL = "https://api.kraken.com/0/public";
 
 export const TOKEN_PAIRS: TOKEN[] = [
   {
-    name: "WBTCUSD",
+    tickerName: "WBTCUSD",
     displayName: "Wrapped Bitcoin",
     symbol: "WBTC",
     wsname: "WTBC/USD",
   },
   {
-    name: "ETHUSDT",
+    tickerName: "ETHUSDT",
     displayName: "Ethereum",
     symbol: "ETH",
     wsname: "ETH/USDT",
   },
   {
-    name: "MATICUSD",
+    tickerName: "MATICUSD",
     displayName: "Matic",
     symbol: "MATIC",
     wsname: "MATIC/USD",
   },
   {
-    name: "USDTZUSD",
+    tickerName: "USDTZUSD",
     displayName: "Tether USD",
     symbol: "USDT",
     wsname: "USDT/USD",
   },
   {
-    name: "USDCUSD",
+    tickerName: "USDCUSD",
     displayName: "Circle USD",
     symbol: "USDC",
     wsname: "USDC/USD",
