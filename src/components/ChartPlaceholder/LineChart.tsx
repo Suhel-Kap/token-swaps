@@ -1,13 +1,13 @@
 "use client";
 
 import { LegacyRef, useEffect, useRef } from "react";
-import { createChart, ColorType } from "lightweight-charts";
+import { createChart, ColorType, Time } from "lightweight-charts";
 
 export const LineChart = ({
   data,
 }: {
   data: Array<{
-    time: string;
+    time: Time;
     value: number;
   }>;
 }) => {

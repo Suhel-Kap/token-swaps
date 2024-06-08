@@ -7,7 +7,7 @@ import {
   RainbowKitAuthenticationProvider,
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import { polygon, base } from "wagmi/chains";
+import { polygon } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { getAuthenticationAdapter } from "@/lib/auth/authenticationAdapter";
@@ -16,8 +16,8 @@ import { isAuthAction } from "@/lib/actions/auth";
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
-  chains: [polygon, base],
-  ssr: true, // If your dApp uses server side rendering (SSR)
+  chains: [polygon],
+  ssr: true,
 });
 
 const queryClient = new QueryClient();
