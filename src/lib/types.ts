@@ -5,6 +5,9 @@ export type TOKEN = {
   displayName: string;
   symbol: string;
   wsname: string;
+  chainId: number;
+  tokenAddress: string;
+  decimals: number;
 };
 
 export type AssetTickerInfo = {
@@ -67,3 +70,99 @@ export type CandleStickChartItem = {
 };
 
 export type ChartType = "baseline" | "candlestick";
+
+export type Asset = {
+  chainId: number;
+  address: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  icon: string;
+  logoURI: string;
+  chainAgnosticId: string | null;
+};
+
+export type GasFees = {
+  gasAmount: string;
+  gasLimit: number;
+  asset: Asset;
+  feesInUsd: number;
+};
+
+export type ApprovalData = {
+  minimumApprovalAmount: string;
+  approvalTokenAddress: string;
+  allowanceTarget: string;
+  owner: string;
+};
+
+export type UserTx = {
+  userTxType: string;
+  txType: string;
+  swapSlippage: number;
+  chainId: number;
+  protocol: {
+    name: string;
+    displayName: string;
+    icon: string;
+  };
+  fromAsset: Asset;
+  approvalData: ApprovalData;
+  fromAmount: string;
+  toAsset: Asset;
+  toAmount: string;
+  minAmountOut: string;
+  gasFees: GasFees;
+  sender: string;
+  recipient: string;
+  userTxIndex: number;
+};
+
+export type IntegratorFee = {
+  amount: string;
+  asset: Asset;
+};
+
+export type Route = {
+  routeId: string;
+  isOnlySwapRoute: boolean;
+  fromAmount: string;
+  toAmount: string;
+  sender: string;
+  recipient: string;
+  totalUserTx: number;
+  totalGasFeesInUsd: number;
+  userTxs: UserTx[];
+  usedDexName: string;
+  integratorFee: IntegratorFee;
+  outputValueInUsd: number;
+  receivedValueInUsd: number;
+  inputValueInUsd: number;
+};
+
+export type RouteTransactionResult = {
+  userTxType: string;
+  txType: string;
+  txData: string;
+  txTarget: string;
+  chainId: number;
+  userTxIndex: number;
+  value: string;
+  approvalData: {
+    minimumApprovalAmount: string;
+    approvalTokenAddress: string;
+    allowanceTarget: string;
+    owner: string;
+  };
+};
+
+export type CheckAllowanceResult = {
+  value: string;
+  tokenAddress: string;
+};
+
+export type TransactionData = {
+  to: string;
+  data: string;
+  value: string;
+};
