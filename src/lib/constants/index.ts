@@ -7,7 +7,7 @@ export const COOKIE_KEYS = {
 export const TOKEN_PAIRS: TOKEN[] = [
   {
     tickerName: "WBTCUSD",
-    displayName: "Wrapped Bitcoin",
+    displayName: "Bitcoin",
     symbol: "WBTC",
     wsname: "WTBC/USD",
   },

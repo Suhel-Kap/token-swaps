@@ -33,7 +33,7 @@ export const CandleStickChart = ({
         },
       },
       width: chartContainerRef?.current!.clientWidth,
-      height: 300,
+      height: 500,
     });
     chart.timeScale().applyOptions({
       barSpacing: 20,

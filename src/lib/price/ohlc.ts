@@ -23,7 +23,6 @@ export const getOhlcData = async (
       },
     );
     const data = await response.json();
-    // console.log(data);
     return data as OHLCApiResponse;
   } catch (error) {
     console.error(error);

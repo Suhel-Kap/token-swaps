@@ -3,6 +3,7 @@ import { TableCell, TableRow } from "../ui/table";
 import Image from "next/image";
 import { getAllTickers } from "@/lib/price/ticker";
 import { Button } from "../ui/button";
+import { AiFillCaretUp, AiFillCaretDown } from "react-icons/ai";
 import Link from "next/link";
 
 export default async function PriceTableRow({ token }: { token: TOKEN }) {
@@ -28,21 +29,27 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
         <Link href={`/coin/${token.tickerName}`}>{token.symbol}</Link>
       </TableCell>
       <TableCell
-        className={`${priceIncreased ? "text-green-500" : "text-red-500"}`}
+        className={`${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`}
       >
         <Link href={`/coin/${token.tickerName}`}>
           ${parseFloat(price?.[token.tickerName].price as string).toFixed(2)}
         </Link>
       </TableCell>
       <TableCell
-        className={`${priceIncreased ? "text-green-500" : "text-red-500"}`}
+        className={`${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`}
       >
-        <Link href={`/coin/${token.tickerName}`}>
+        <Link
+          className="flex place-items-center"
+          href={`/coin/${token.tickerName}`}
+        >
+          {priceIncreased ? <AiFillCaretUp /> : <AiFillCaretDown />}
           {price?.[token.tickerName].percentage.toFixed(2)}%
         </Link>
       </TableCell>
       <TableCell>
-        <Button>Trade</Button>
+        <Link href={`/trade/${token.tickerName}`}>
+          <Button>Trade</Button>
+        </Link>
       </TableCell>
     </TableRow>
   );
