@@ -7,9 +7,12 @@ import { OHLCApiResponse } from "../types";
 
 export const getOhlcData = async (
   pair: string,
-  interval = 60,
+  interval = 1,
   since?: number,
 ): Promise<OHLCApiResponse | null> => {
+  console.log(
+    `${KRAKEN_PUBLIC_URL}/OHLC?pair=${pair}&interval=${interval}${since ? `&since=${since}` : ""}`,
+  );
   try {
     const response = await fetch(
       `${KRAKEN_PUBLIC_URL}/OHLC?pair=${pair}&interval=${interval}${since ? `&since=${since}` : ""}`,
@@ -24,6 +27,7 @@ export const getOhlcData = async (
       },
     );
     const data = await response.json();
+    // console.log(data);
     return data as OHLCApiResponse;
   } catch (error) {
     console.error(error);

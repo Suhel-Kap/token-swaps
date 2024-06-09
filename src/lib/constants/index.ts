@@ -4,11 +4,6 @@ export const COOKIE_KEYS = {
   JWT: "jwt",
 };
 
-export const TICKER_REVALIDATION_TIME_IN_SECONDS = 60;
-export const OHLC_REVALIDATION_TIME_IN_SECONDS = 60 * 60;
-
-export const KRAKEN_PUBLIC_URL = "https://api.kraken.com/0/public";
-
 export const TOKEN_PAIRS: TOKEN[] = [
   {
     tickerName: "WBTCUSD",
@@ -41,3 +36,15 @@ export const TOKEN_PAIRS: TOKEN[] = [
     wsname: "USDC/USD",
   },
 ];
+
+export const TICKER_REVALIDATION_TIME_IN_SECONDS = 60;
+export const OHLC_REVALIDATION_TIME_IN_SECONDS = 60 * 60;
+
+export const KRAKEN_PUBLIC_URL = "https://api.kraken.com/0/public";
+
+export const TIME_INTERVALS = {
+  ONE_HOUR: 60,
+  FOUR_HOURS: 240,
+  ONE_DAY: 1440,
+  ONE_WEEK: 10080,
+};

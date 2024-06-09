@@ -1,24 +1,15 @@
 "use client";
 
 import { LegacyRef, useEffect, useRef } from "react";
-import { createChart, ColorType, Time } from "lightweight-charts";
+import { createChart, ColorType } from "lightweight-charts";
+import { LineChartItem } from "@/lib/types";
 
-export const LineChart = ({
-  data,
-}: {
-  data: Array<{
-    time: Time;
-    value: number;
-  }>;
-}) => {
+export const LineChart = ({ data }: { data: Array<LineChartItem> }) => {
   const chartContainerRef = useRef<HTMLElement>();
 
   const colors = {
-    backgroundColor: "white",
-    lineColor: "#2962FF",
-    textColor: "black",
-    areaTopColor: "#2962FF",
-    areaBottomColor: "rgba(41, 98, 255, 0.28)",
+    backgroundColor: "black",
+    textColor: "white",
   };
 
   useEffect(() => {
@@ -36,11 +27,16 @@ export const LineChart = ({
     });
     chart.timeScale().fitContent();
 
-    const newSeries = chart.addAreaSeries({
-      lineColor: colors.lineColor,
-      topColor: colors.areaTopColor,
-      bottomColor: colors.areaBottomColor,
+    const newSeries = chart.addBaselineSeries({
+      baseValue: { type: "price", price: 25 },
+      topLineColor: "rgba( 38, 166, 154, 1)",
+      topFillColor1: "rgba( 38, 166, 154, 0.28)",
+      topFillColor2: "rgba( 38, 166, 154, 0.05)",
+      bottomLineColor: "rgba( 239, 83, 80, 1)",
+      bottomFillColor1: "rgba( 239, 83, 80, 0.05)",
+      bottomFillColor2: "rgba( 239, 83, 80, 0.28)",
     });
+
     newSeries.setData(data);
 
     window.addEventListener("resize", handleResize);

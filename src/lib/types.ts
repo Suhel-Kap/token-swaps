@@ -1,3 +1,5 @@
+import { Time } from "lightweight-charts";
+
 export type TOKEN = {
   tickerName: string;
   displayName: string;
@@ -49,4 +51,9 @@ export type OHLCApiResponse = {
   result: {
     [key: string]: Array<OHLCData>;
   };
+};
+
+export type LineChartItem = {
+  time: Time;
+  value: number;
 };
