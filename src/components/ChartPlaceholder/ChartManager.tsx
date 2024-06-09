@@ -1,13 +1,21 @@
 "use client";
 
-import { LineChartItem, OHLCApiResponse } from "@/lib/types";
-import { LineChart } from "./LineChart";
+import {
+  CandleStickChartItem,
+  ChartType,
+  LineChartItem,
+  OHLCApiResponse,
+} from "@/lib/types";
+import { BaseLineChart } from "./BaseLineChart";
 import { prepareLineChartData } from "@/lib/chartUtils/prepareLineChartData";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { useState, useEffect, Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { getOhlcData } from "@/lib/price/ohlc";
 import { TIME_INTERVALS } from "@/lib/constants";
+import { TimeToggle } from "./TimeToggle";
+import { prepareCandlestickChartData } from "@/lib/chartUtils/prepareCandleStickChartData";
+import { CandleStickChart } from "./CandleStickChart";
+import { ChartToggle } from "./ChartToggle";
 
 export const ChartManager = ({
   initialData,
@@ -16,7 +24,8 @@ export const ChartManager = ({
   initialData: OHLCApiResponse;
   tickerName: string;
 }) => {
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1m");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("15m");
+  const [chartType, setChartType] = useState<ChartType>("baseline");
   const [ohlcData, setOhlcData] = useState<Array<OHLCApiResponse>>([
     initialData,
   ]);
@@ -45,50 +54,48 @@ export const ChartManager = ({
     fetchAdditionalData();
   }, [initialData, tickerName]);
 
-  const seriesData = new Map<string, Array<LineChartItem>>();
+  const baseLineData = new Map<string, Array<LineChartItem>>();
   try {
     const preparedData = ohlcData.map((d) => prepareLineChartData(d!));
-    seriesData.set("1m", preparedData[0]);
-    if (preparedData[1]) seriesData.set("1h", preparedData[1]);
-    if (preparedData[2]) seriesData.set("4h", preparedData[2]);
-    if (preparedData[3]) seriesData.set("1d", preparedData[3]);
-    if (preparedData[4]) seriesData.set("1w", preparedData[4]);
+    baseLineData.set("15m", preparedData[0]);
+    if (preparedData[1]) baseLineData.set("1h", preparedData[1]);
+    if (preparedData[2]) baseLineData.set("4h", preparedData[2]);
+    if (preparedData[3]) baseLineData.set("1d", preparedData[3]);
+    if (preparedData[4]) baseLineData.set("1w", preparedData[4]);
   } catch (e) {
     console.error(e);
   }
 
-  console.log(seriesData.get("1m"));
-  console.log(seriesData.get("4h"));
+  const candleStickData = new Map<string, Array<CandleStickChartItem>>();
+  try {
+    const preparedData = ohlcData.map((d) => prepareCandlestickChartData(d!));
+    candleStickData.set("15m", preparedData[0]);
+    if (preparedData[1]) candleStickData.set("1h", preparedData[1]);
+    if (preparedData[2]) candleStickData.set("4h", preparedData[2]);
+    if (preparedData[3]) candleStickData.set("1d", preparedData[3]);
+    if (preparedData[4]) candleStickData.set("1w", preparedData[4]);
+  } catch (e) {
+    console.error(e);
+  }
 
   return (
     <div>
-      <ToggleGroup
-        variant="outline"
-        type="single"
-        value={selectedTimeframe}
-        onValueChange={(value) => {
-          if (value === "") return;
-          setSelectedTimeframe(value);
-        }}
-      >
-        <ToggleGroupItem value="1m" aria-label="1 minute interval">
-          1m
-        </ToggleGroupItem>
-        <ToggleGroupItem value="1h" aria-label="1 hour interval">
-          1h
-        </ToggleGroupItem>
-        <ToggleGroupItem value="4h" aria-label="4 hours interval">
-          4h
-        </ToggleGroupItem>
-        <ToggleGroupItem value="1d" aria-label="1 day interval">
-          1d
-        </ToggleGroupItem>
-        <ToggleGroupItem value="1w" aria-label="1 week interval">
-          1w
-        </ToggleGroupItem>
-      </ToggleGroup>
+      <div className="flex justify-between mb-2 p-2">
+        <ChartToggle
+          selectedChart={chartType}
+          setSelectedChart={setChartType}
+        />
+        <TimeToggle
+          selectedTimeframe={selectedTimeframe}
+          setSelectedTimeframe={setSelectedTimeframe}
+        />
+      </div>
       <Suspense fallback={<Skeleton className="w-full h-48" />}>
-        <LineChart data={seriesData.get(selectedTimeframe) || []} />
+        {chartType === "baseline" ? (
+          <BaseLineChart data={baseLineData.get(selectedTimeframe)!} />
+        ) : (
+          <CandleStickChart data={candleStickData.get(selectedTimeframe)!} />
+        )}
       </Suspense>
     </div>
   );

@@ -38,7 +38,7 @@ export const TOKEN_PAIRS: TOKEN[] = [
 ];
 
 export const TICKER_REVALIDATION_TIME_IN_SECONDS = 60;
-export const OHLC_REVALIDATION_TIME_IN_SECONDS = 60 * 60;
+export const OHLC_REVALIDATION_TIME_IN_SECONDS = 15 * 60; // 15 minutes
 
 export const KRAKEN_PUBLIC_URL = "https://api.kraken.com/0/public";
 

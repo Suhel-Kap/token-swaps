@@ -12,7 +12,7 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
   return (
     <TableRow>
       <TableCell>
-        <Link href={`/coin/${token.tickerName}`} passHref>
+        <Link href={`/coin/${token.tickerName}`}>
           <div className="flex place-items-center gap-1">
             <Image
               alt={token.displayName}
@@ -25,21 +25,19 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
         </Link>
       </TableCell>
       <TableCell>
-        <Link href={`/coin/${token.tickerName}`} passHref>
-          {token.symbol}
-        </Link>
+        <Link href={`/coin/${token.tickerName}`}>{token.symbol}</Link>
       </TableCell>
       <TableCell
         className={`${priceIncreased ? "text-green-500" : "text-red-500"}`}
       >
-        <Link href={`/coin/${token.tickerName}`} passHref>
+        <Link href={`/coin/${token.tickerName}`}>
           ${parseFloat(price?.[token.tickerName].price as string).toFixed(2)}
         </Link>
       </TableCell>
       <TableCell
         className={`${priceIncreased ? "text-green-500" : "text-red-500"}`}
       >
-        <Link href={`/coin/${token.tickerName}`} passHref>
+        <Link href={`/coin/${token.tickerName}`}>
           {price?.[token.tickerName].percentage.toFixed(2)}%
         </Link>
       </TableCell>

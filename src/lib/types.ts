@@ -57,3 +57,13 @@ export type LineChartItem = {
   time: Time;
   value: number;
 };
+
+export type CandleStickChartItem = {
+  time: Time;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+};
+
+export type ChartType = "baseline" | "candlestick";
