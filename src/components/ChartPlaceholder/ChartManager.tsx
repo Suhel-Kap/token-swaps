@@ -31,11 +31,11 @@ export const ChartManager = ({
       ];
 
       try {
-        const remainingData = await Promise.all(
+        const remainingData = (await Promise.all(
           remainingIntervals.map((interval) =>
             getOhlcData(tickerName, interval),
           ),
-        );
+        )) as Array<OHLCApiResponse>;
         setOhlcData([initialData, ...remainingData]);
       } catch (error) {
         console.error("Error fetching additional OHLC data:", error);
