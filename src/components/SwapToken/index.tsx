@@ -1,112 +1,108 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { FaArrowDownLong } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
-import { FaArrowDownLong } from "react-icons/fa6";
-import { TOKEN } from "@/lib/types";
-import { Separator } from "../ui/separator";
-import { useState } from "react";
-import { TOKEN_PAIRS } from "@/lib/constants";
+import { Separator } from "@/components/ui/separator";
+import { SwapTokenProps, TOKEN } from "@/lib/types";
+import { TokenInput } from "./TokenInput";
+import { useAccount, useWalletClient } from "wagmi";
+import { getBalance } from "@/lib/swapUtils/getBalance";
+import { formatUnits } from "viem";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
-const getTokenFromSymbol = (symbol: string) =>
-  TOKEN_PAIRS.find((token) => token.symbol === symbol);
+export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
+  const [tokenIn, setTokenIn] = useState<TOKEN | null>(initialTokenIn);
+  const [tokenOut, setTokenOut] = useState<TOKEN | null>(null);
+  const [tokenInAmount, setTokenInAmount] = useState<number>(0);
+  const [tokenOutAmount, setTokenOutAmount] = useState<number>(0);
+  const [balance, setBalance] = useState<string | null>();
 
-export const SwapToken = ({ initialTokenIn }: { initialTokenIn: TOKEN }) => {
-  const [tokenIn, setTokenIn] = useState(initialTokenIn);
-  const [tokenOut, setTokenOut] = useState<TOKEN | null>();
-  const [tokenInAmount, setTokenInAmount] = useState(0);
-  const [tokenOutAmount, setTokenOutAmount] = useState(0);
+  const { openConnectModal } = useConnectModal();
+  const { isConnected, address, chainId } = useAccount();
+  const { data: signer } = useWalletClient();
+
+  useEffect(() => {
+    if (tokenIn && isConnected) {
+      getBalance(chainId!, address as string, tokenIn).then((balance) => {
+        setBalance(balance);
+      });
+    }
+  }, [tokenIn]);
 
   return (
-    <>
-      <Card className="max-w-lg w-[385px] mx-auto">
-        <CardContent className="mt-4">
-          <div>
-            <Label>Sell</Label>
-            <div className="flex items-center space-x-2">
-              <Input
-                placeholder="0.0"
-                className="w-3/5"
-                type="number"
-                onChange={(e) => setTokenInAmount(parseFloat(e.target.value))}
-                value={tokenInAmount}
-              />
-              <Select
-                onValueChange={(e) => setTokenIn(getTokenFromSymbol(e)!)}
-                defaultValue={tokenIn.symbol}
-              >
-                <SelectTrigger className="w-2/5">
-                  {tokenIn.symbol}
-                </SelectTrigger>
-                <SelectContent>
-                  {TOKEN_PAIRS.map((token, index) => {
-                    const shouldDisable = tokenOut
-                      ? token.symbol === tokenOut.symbol
-                      : false;
-                    return (
-                      <SelectItem
-                        disabled={shouldDisable}
-                        key={index}
-                        value={token.symbol}
-                      >
-                        {token.displayName}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="flex justify-center relative mt-10">
-            <Separator />
-            <Button variant="outline" className="absolute top-[-18px]">
-              <FaArrowDownLong />
+    <Card className="max-w-lg w-[385px] mx-auto">
+      <CardContent className="mt-4">
+        <TokenInput
+          label="Sell"
+          token={tokenIn}
+          setToken={setTokenIn}
+          amount={tokenInAmount}
+          setAmount={setTokenInAmount}
+          excludeToken={tokenOut}
+        />
+        {isConnected && balance && (
+          <div className="flex justify-end place-items-center mt-1">
+            <p className="text-xs text-gray-500">
+              Balance:{" "}
+              {parseFloat(
+                formatUnits(BigInt(balance), tokenIn?.decimals ?? 18),
+              ).toFixed(3)}
+            </p>
+            <Button
+              onClick={() => {
+                setTokenInAmount(
+                  Number(formatUnits(BigInt(balance), tokenIn?.decimals ?? 18)),
+                );
+              }}
+              className="h-5 p-2"
+              variant="ghost"
+            >
+              Max
             </Button>
           </div>
-          <div className="mt-6">
-            <Label>Buy</Label>
-            <div className="flex items-center space-x-2">
-              <Input
-                placeholder="0.0"
-                className="w-3/5"
-                type="number"
-                value={tokenOutAmount}
-                onChange={(e) => setTokenOutAmount(parseFloat(e.target.value))}
-              />
-              <Select onValueChange={(e) => setTokenOut(getTokenFromSymbol(e))}>
-                <SelectTrigger className="w-2/5">
-                  {tokenOut ? tokenOut.symbol : "Select token"}
-                </SelectTrigger>
-                <SelectContent>
-                  {TOKEN_PAIRS.map((token, index) => {
-                    const shouldDisable = tokenIn.symbol === token.symbol;
-                    return (
-                      <SelectItem
-                        disabled={shouldDisable}
-                        key={index}
-                        value={token.symbol}
-                      >
-                        {token.displayName}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="text-center">
-          <Button className="w-full">Swap</Button>
-        </CardFooter>
-      </Card>
-    </>
+        )}
+        <div className="flex justify-center relative mt-10 mb-6">
+          <Separator />
+          <Button
+            onClick={() => {
+              setTokenIn(tokenOut);
+              setTokenOut(tokenIn);
+              setTokenInAmount(tokenOutAmount);
+              setTokenOutAmount(tokenInAmount);
+            }}
+            variant="outline"
+            className="absolute top-[-18px]"
+          >
+            <FaArrowDownLong />
+          </Button>
+        </div>
+        <TokenInput
+          label="Buy"
+          token={tokenOut}
+          setToken={setTokenOut}
+          amount={tokenOutAmount}
+          setAmount={setTokenOutAmount}
+          excludeToken={tokenIn}
+          disabled={true}
+        />
+      </CardContent>
+      <CardFooter className="text-center">
+        <Button
+          variant={isConnected ? "default" : "secondary"}
+          className="w-full"
+          onClick={() => {
+            if (isConnected) {
+              console.log("Swap");
+            } else if (openConnectModal) {
+              openConnectModal();
+            }
+          }}
+        >
+          {isConnected ? "Swap" : "Connect Wallet"}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };

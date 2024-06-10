@@ -14,7 +14,7 @@ export const ChartPlaceholder = async ({
   const initialData = await getOhlcData(tickerName);
 
   return (
-    <Suspense fallback={<Skeleton className="w-full h-48" />}>
+    <Suspense fallback={<Skeleton className="w-full h-[500px]" />}>
       <ChartManager
         initialData={initialData as OHLCApiResponse}
         tickerName={tickerName}

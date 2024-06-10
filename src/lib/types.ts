@@ -1,4 +1,5 @@
 import { Time } from "lightweight-charts";
+import { Dispatch, SetStateAction } from "react";
 
 export type TOKEN = {
   tickerName: string;
@@ -165,4 +166,18 @@ export type TransactionData = {
   to: string;
   data: string;
   value: string;
+};
+
+export type SwapTokenProps = {
+  initialTokenIn: TOKEN;
+};
+
+export type TokenInputProps = {
+  label: string;
+  token: TOKEN | null;
+  setToken: Dispatch<SetStateAction<TOKEN | null>>;
+  amount: number;
+  setAmount: Dispatch<SetStateAction<number>>;
+  excludeToken?: TOKEN | null;
+  disabled?: boolean;
 };
