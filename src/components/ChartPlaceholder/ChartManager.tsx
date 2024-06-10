@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  CandleStickChartItem,
-  ChartType,
-  LineChartItem,
-  OHLCApiResponse,
-} from "@/lib/types";
+import { ChartType, OHLCApiResponse } from "@/lib/types";
 import { BaseLineChart } from "./BaseLineChart";
 import { prepareLineChartData } from "@/lib/chartUtils/prepareLineChartData";
 import { useState, useEffect, Suspense } from "react";
@@ -16,6 +11,7 @@ import { TimeToggle } from "./TimeToggle";
 import { prepareCandlestickChartData } from "@/lib/chartUtils/prepareCandleStickChartData";
 import { CandleStickChart } from "./CandleStickChart";
 import { ChartToggle } from "./ChartToggle";
+import { prepareChartData } from "@/lib/chartUtils/preapareChartData";
 
 export const ChartManager = ({
   initialData,
@@ -54,29 +50,11 @@ export const ChartManager = ({
     fetchAdditionalData();
   }, [initialData, tickerName]);
 
-  const baseLineData = new Map<string, Array<LineChartItem>>();
-  try {
-    const preparedData = ohlcData.map((d) => prepareLineChartData(d!));
-    baseLineData.set("15m", preparedData[0]);
-    if (preparedData[1]) baseLineData.set("1h", preparedData[1]);
-    if (preparedData[2]) baseLineData.set("4h", preparedData[2]);
-    if (preparedData[3]) baseLineData.set("1d", preparedData[3]);
-    if (preparedData[4]) baseLineData.set("1w", preparedData[4]);
-  } catch (e) {
-    console.error(e);
-  }
-
-  const candleStickData = new Map<string, Array<CandleStickChartItem>>();
-  try {
-    const preparedData = ohlcData.map((d) => prepareCandlestickChartData(d!));
-    candleStickData.set("15m", preparedData[0]);
-    if (preparedData[1]) candleStickData.set("1h", preparedData[1]);
-    if (preparedData[2]) candleStickData.set("4h", preparedData[2]);
-    if (preparedData[3]) candleStickData.set("1d", preparedData[3]);
-    if (preparedData[4]) candleStickData.set("1w", preparedData[4]);
-  } catch (e) {
-    console.error(e);
-  }
+  const baseLineData = prepareChartData(ohlcData, prepareLineChartData);
+  const candleStickData = prepareChartData(
+    ohlcData,
+    prepareCandlestickChartData,
+  );
 
   return (
     <div>

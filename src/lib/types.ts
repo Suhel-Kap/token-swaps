@@ -9,6 +9,7 @@ export type TOKEN = {
   chainId: number;
   tokenAddress: string;
   decimals: number;
+  isNative?: boolean;
 };
 
 export type AssetTickerInfo = {

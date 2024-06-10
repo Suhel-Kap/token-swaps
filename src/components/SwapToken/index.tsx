@@ -1,17 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaArrowDownLong } from "react-icons/fa6";
+import { FaArrowDownLong, FaGasPump } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { FaGasPump } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
 import { Route, SwapTokenProps, TOKEN } from "@/lib/types";
 import { TokenInput } from "./TokenInput";
 import { useAccount, useWalletClient } from "wagmi";
 import { getBalance } from "@/lib/swapUtils/getBalance";
 import {
-  TransactionReceipt,
   WalletClient,
   formatUnits,
   parseEther,
@@ -25,9 +23,11 @@ import { getRouteTransactionData } from "@/lib/swapUtils/getRouteTransactionData
 import { checkAllowance } from "@/lib/swapUtils/checkAllowance";
 import { getApprovalTransactionData } from "@/lib/swapUtils/getApprovalTransactionData";
 import { getPublicClient } from "@/lib/swapUtils/getPublicClient";
-import { ToastAction } from "../ui/toast";
+import { ToastAction } from "@/components/ui/toast";
 import { getViemChain } from "@/lib/swapUtils/getViemChain";
-import { MATIC_ADDRESS_FOR_POLYGON } from "@/lib/constants";
+import { handleApprovalTransaction } from "@/lib/swapUtils/handleApprovalTransaction";
+import { handleTransactionReceipt } from "@/lib/swapUtils/handleTransactionReceipt";
+import { MyToast } from "./MyToast";
 
 export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
   const [tokenIn, setTokenIn] = useState<TOKEN | null>(initialTokenIn);
@@ -97,16 +97,19 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
       const transactionData = await getRouteTransactionData(route);
       const chain = getViemChain(chainId!);
 
-      console.log("transactionData", transactionData);
+      const {
+        allowanceTarget,
+        approvalTokenAddress,
+        minimumApprovalAmount,
+        owner,
+      } = transactionData?.approvalData!;
 
       if (transactionData?.approvalData !== null) {
         const allowanceCheckResult = await checkAllowance({
-          allowanceTarget: transactionData?.approvalData.allowanceTarget!,
-          approvalTokenAddress:
-            transactionData?.approvalData.approvalTokenAddress!,
-          minimumApprovalAmount:
-            transactionData?.approvalData.minimumApprovalAmount!,
-          owner: transactionData?.approvalData.owner!,
+          allowanceTarget,
+          approvalTokenAddress,
+          minimumApprovalAmount,
+          owner,
           chainId: chainId!,
         });
 
@@ -119,90 +122,42 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
             title: "Approval Required",
             description: "Please sign the approval transaction to continue",
           });
+
           const approvalTransactionData = await getApprovalTransactionData({
-            approvalTokenAddress:
-              transactionData?.approvalData.approvalTokenAddress!,
-            allowanceTarget: transactionData?.approvalData.allowanceTarget!,
-            minimumApprovalAmount:
-              transactionData?.approvalData.minimumApprovalAmount!,
-            owner: transactionData?.approvalData.owner!,
+            approvalTokenAddress,
+            allowanceTarget,
+            minimumApprovalAmount,
+            owner,
             chainId: chainId!,
           });
 
-          const publicClient = getPublicClient(chainId!);
-          const gasPrice = (await publicClient.getGasPrice()) + parseGwei("10");
-          console.log("gasPrice", gasPrice);
-
-          const gasEstimate = await publicClient.estimateGas({
-            account: address as `0x${string}`,
-            to: approvalTransactionData?.to! as `0x${string}`,
-            data: approvalTransactionData?.data! as `0x${string}`,
-            value: BigInt(0),
-            gasPrice: gasPrice,
-          });
-
-          console.log("gasEstimate", gasEstimate);
-
-          const approvalTransactionHash = await signer.sendTransaction({
-            account: address as `0x${string}`,
-            to: approvalTransactionData?.to! as `0x${string}`,
-            data: approvalTransactionData?.data! as `0x${string}`,
-            value: BigInt(0),
-            gasPrice: gasPrice,
-            gasLimit: gasEstimate,
-            chain,
-          });
-
+          let approvalTxnRes = await handleApprovalTransaction(
+            approvalTransactionData!,
+            signer,
+            chainId!,
+          );
           toast({
-            title: "Approval Transaction Sent",
-            description: "Please wait for the transaction to be confirmed",
+            title: approvalTxnRes.toastData.title!,
+            description: approvalTxnRes.toastData.description!,
           });
-
-          let transactionReceipt: TransactionReceipt | null = null;
-          while (transactionReceipt === null) {
-            transactionReceipt = await publicClient.waitForTransactionReceipt({
-              hash: approvalTransactionHash,
-            });
-            console.log("txnReceipt", transactionReceipt);
-
-            if (transactionReceipt.status === "success") {
-              toast({
-                title: "Transaction Confirmed",
-                description: "You have successfully approved tokens",
-                action: (
-                  <ToastAction
-                    altText="Transaction Link"
-                    onClick={() =>
-                      window.open(
-                        `${chain.blockExplorers.default.url}/tx/${transactionReceipt?.transactionHash!}`,
-                        "_blank",
-                      )
-                    }
-                  >
-                    Explorer
-                  </ToastAction>
-                ),
-              });
-            } else if (transactionReceipt.status === "reverted") {
-              toast({
-                title: "Transaction Failed",
-                description: "Please try again",
-              });
-            }
-          }
+          let txnReceiptResult = await handleTransactionReceipt(
+            approvalTxnRes.transactionHash,
+            "Approval",
+            chainId!,
+          );
+          toast({
+            title: txnReceiptResult?.toastData.title!,
+            description: txnReceiptResult?.toastData.description!,
+            action: <MyToast url={txnReceiptResult?.toastData.url!} />,
+          });
         }
       }
 
       const publicClient = getPublicClient(chainId!);
-
       const gasPrice = (await publicClient.getGasPrice()) + parseGwei("10");
-      console.log("gasPrice", gasPrice);
-
-      const value =
-        tokenIn?.tokenAddress === MATIC_ADDRESS_FOR_POLYGON
-          ? parseEther(tokenInAmount.toString())
-          : BigInt(0);
-      console.log("value", value);
+      const value = tokenIn?.isNative
+        ? parseEther(tokenInAmount.toString())
+        : BigInt(0);
 
       const gasEstimate = await publicClient.estimateGas({
         account: address as `0x${string}`,
@@ -211,7 +166,6 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
         value,
         gasPrice: gasPrice,
       });
-      console.log("gasEstimate", gasEstimate);
 
       toast({
         title: "Signature Required",
@@ -233,38 +187,16 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
         description: "Please wait for the transaction to be confirmed",
       });
 
-      let transactionReceipt: TransactionReceipt | null = null;
-      while (transactionReceipt === null) {
-        transactionReceipt = await publicClient.waitForTransactionReceipt({
-          hash: transactionHash,
-        });
-        console.log("txnReceipt", transactionReceipt);
-
-        if (transactionReceipt.status === "success") {
-          toast({
-            title: "Transaction Confirmed",
-            description: "You have successfully approved tokens",
-            action: (
-              <ToastAction
-                altText="Transaction Link"
-                onClick={() =>
-                  window.open(
-                    `${chain.blockExplorers.default.url}/tx/${transactionReceipt?.transactionHash!}`,
-                    "_blank",
-                  )
-                }
-              >
-                Explorer
-              </ToastAction>
-            ),
-          });
-        } else if (transactionReceipt.status === "reverted") {
-          toast({
-            title: "Transaction Failed",
-            description: "Please try again",
-          });
-        }
-      }
+      const swapTxnRes = await handleTransactionReceipt(
+        transactionHash,
+        "Swap",
+        chainId!,
+      );
+      toast({
+        title: swapTxnRes?.toastData.title!,
+        description: swapTxnRes?.toastData.description!,
+        action: <MyToast url={swapTxnRes?.toastData.url!} />,
+      });
     } catch (error) {
       console.error(error);
       toast({
@@ -371,7 +303,6 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
               className="w-full"
               onClick={() => {
                 if (signer && route !== null) {
-                  console.log(route);
                   // check if the user has enough balance
                   const amount = parseUnits(
                     tokenInAmount.toString() as string,

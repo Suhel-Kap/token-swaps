@@ -31,6 +31,7 @@ export const TOKEN_PAIRS: TOKEN[] = [
     chainId: 137,
     tokenAddress: "0x0000000000000000000000000000000000001010",
     decimals: 18,
+    isNative: true,
   },
   {
     tickerName: "USDTZUSD",
