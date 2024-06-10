@@ -1,11 +1,23 @@
-import { Time } from "lightweight-charts";
+import {
+  BaselineData,
+  BaselineSeriesOptions,
+  BaselineStyleOptions,
+  CandlestickData,
+  CandlestickSeriesOptions,
+  CandlestickStyleOptions,
+  DeepPartial,
+  ISeriesApi,
+  SeriesOptionsCommon,
+  Time,
+  WhitespaceData,
+} from "lightweight-charts";
 import { Dispatch, SetStateAction } from "react";
 
 export type TOKEN = {
   tickerName: string;
+  wsName: string;
   displayName: string;
   symbol: string;
-  wsname: string;
   chainId: number;
   tokenAddress: string;
   decimals: number;
@@ -50,6 +62,20 @@ export type OHLCData = [
   string, // Volume
   number, // Count
 ];
+
+export type WebSocketOHLCData = {
+  close: number;
+  high: number;
+  interval: number;
+  interval_begin: string;
+  low: number;
+  open: number;
+  symbol: string;
+  timestamp: string;
+  trades: number;
+  volume: number;
+  vwap: number;
+};
 
 export type OHLCApiResponse = {
   error: string[];
@@ -178,3 +204,30 @@ export type TokenInputProps = {
   excludeToken?: TOKEN | null;
   disabled?: boolean;
 };
+
+export type WebSocketMessage = {
+  method: string;
+  params: {
+    channel: string;
+    symbol: string[];
+    interval?: number;
+    snapshot?: boolean;
+    req_id?: number;
+  };
+};
+
+export type BaseLineSeries = ISeriesApi<
+  "Baseline",
+  Time,
+  BaselineData<Time> | WhitespaceData<Time>,
+  BaselineSeriesOptions,
+  DeepPartial<BaselineStyleOptions & SeriesOptionsCommon>
+>;
+
+export type CandleStickSeries = ISeriesApi<
+  "Candlestick",
+  Time,
+  CandlestickData<Time> | WhitespaceData<Time>,
+  CandlestickSeriesOptions,
+  DeepPartial<CandlestickStyleOptions & SeriesOptionsCommon>
+>;

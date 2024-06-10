@@ -1,11 +1,19 @@
 "use client";
 
-import { LegacyRef, useEffect, useRef } from "react";
-import { createChart, ColorType } from "lightweight-charts";
-import { LineChartItem } from "@/lib/types";
+import { LegacyRef, useEffect, useRef, useState } from "react";
+import { createChart, ColorType, Time } from "lightweight-charts";
+import { BaseLineSeries, LineChartItem } from "@/lib/types";
 
-export const BaseLineChart = ({ data }: { data: Array<LineChartItem> }) => {
+export const BaseLineChart = ({
+  data,
+  additionalData,
+}: {
+  data: Array<LineChartItem>;
+  additionalData?: Array<LineChartItem>;
+}) => {
   const chartContainerRef = useRef<HTMLElement>();
+  const latestTime = useRef<Time>(data[data.length - 1].time);
+  const seriesRef = useRef<BaseLineSeries>();
 
   useEffect(() => {
     const handleResize = () => {
@@ -45,6 +53,7 @@ export const BaseLineChart = ({ data }: { data: Array<LineChartItem> }) => {
     });
 
     newSeries.setData(data);
+    seriesRef.current = newSeries;
 
     window.addEventListener("resize", handleResize);
 
@@ -54,6 +63,16 @@ export const BaseLineChart = ({ data }: { data: Array<LineChartItem> }) => {
       chart.remove();
     };
   }, [data]);
+
+  useEffect(() => {
+    if (seriesRef.current && additionalData) {
+      const newLineData = additionalData[additionalData.length - 1];
+      if (newLineData.time > latestTime.current) {
+        seriesRef.current.update(newLineData);
+        latestTime.current = newLineData.time;
+      }
+    }
+  }, [additionalData]);
 
   return <div ref={chartContainerRef as LegacyRef<HTMLDivElement>} />;
 };

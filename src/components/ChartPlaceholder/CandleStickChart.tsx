@@ -1,15 +1,19 @@
 "use client";
 
-import { LegacyRef, useEffect, useRef } from "react";
-import { createChart, ColorType } from "lightweight-charts";
-import { CandleStickChartItem } from "@/lib/types";
+import { LegacyRef, useEffect, useRef, useState } from "react";
+import { createChart, ColorType, Time } from "lightweight-charts";
+import { CandleStickChartItem, CandleStickSeries } from "@/lib/types";
 
 export const CandleStickChart = ({
   data,
+  additionalData,
 }: {
   data: Array<CandleStickChartItem>;
+  additionalData?: Array<CandleStickChartItem>;
 }) => {
   const chartContainerRef = useRef<HTMLElement>();
+  const latestTime = useRef<Time>(data[data.length - 1].time);
+  const seriesRef = useRef<CandleStickSeries>();
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,6 +52,7 @@ export const CandleStickChart = ({
     });
 
     newSeries.setData(data);
+    seriesRef.current = newSeries;
 
     window.addEventListener("resize", handleResize);
 
@@ -57,6 +62,16 @@ export const CandleStickChart = ({
       chart.remove();
     };
   }, [data]);
+
+  useEffect(() => {
+    if (seriesRef.current && additionalData) {
+      const newCandle = additionalData[additionalData.length - 1];
+      if (newCandle.time > latestTime.current) {
+        seriesRef.current.update(newCandle);
+        latestTime.current = newCandle.time;
+      }
+    }
+  }, [additionalData]);
 
   return <div ref={chartContainerRef as LegacyRef<HTMLDivElement>} />;
 };

@@ -1,17 +1,32 @@
 "use client";
 
-import { ChartType, OHLCApiResponse } from "@/lib/types";
+import {
+  CandleStickChartItem,
+  ChartType,
+  LineChartItem,
+  OHLCApiResponse,
+} from "@/lib/types";
 import { BaseLineChart } from "./BaseLineChart";
 import { prepareLineChartData } from "@/lib/chartUtils/prepareLineChartData";
 import { useState, useEffect, Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { getOhlcData } from "@/lib/price/ohlc";
-import { TIME_INTERVALS } from "@/lib/constants";
+import {
+  KRAKEN_PUBLIC_WS_URL,
+  TIME_INTERVALS,
+  TOKEN_PAIRS,
+} from "@/lib/constants";
 import { TimeToggle } from "./TimeToggle";
 import { prepareCandlestickChartData } from "@/lib/chartUtils/prepareCandleStickChartData";
 import { CandleStickChart } from "./CandleStickChart";
 import { ChartToggle } from "./ChartToggle";
-import { prepareChartData } from "@/lib/chartUtils/preapareChartData";
+import {
+  prepareChartData,
+  timeFrameToInterval,
+} from "@/lib/chartUtils/preapareChartData";
+import { createWebSocket, handleWebSocketMessage } from "@/lib/wesocket";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export const ChartManager = ({
   initialData,
@@ -25,10 +40,50 @@ export const ChartManager = ({
   const [ohlcData, setOhlcData] = useState<Array<OHLCApiResponse>>([
     initialData,
   ]);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [liveData, setLiveData] = useState<{
+    lineChartData: Array<LineChartItem>;
+    candleStickChartData: Array<CandleStickChartItem>;
+  } | null>(null);
+
+  const openWs = () => {
+    const token = TOKEN_PAIRS.find((pair) => pair.tickerName === tickerName);
+    const ws = createWebSocket(
+      KRAKEN_PUBLIC_WS_URL,
+      [token?.wsName!],
+      timeFrameToInterval(selectedTimeframe),
+    );
+
+    ws.onmessage = (event) => {
+      const wsResponse = handleWebSocketMessage(event);
+      if (wsResponse) {
+        const lineChartData = prepareLineChartData(wsResponse);
+        const candleStickChartData = prepareCandlestickChartData(wsResponse);
+        setLiveData({ lineChartData, candleStickChartData });
+      }
+    };
+
+    setSocket(ws);
+  };
+
+  const closeWs = () => {
+    if (socket) {
+      socket.close();
+    }
+  };
+
+  const handleWs = (wantOpen: boolean) => {
+    if (wantOpen) {
+      openWs();
+    } else {
+      closeWs();
+    }
+  };
 
   useEffect(() => {
     const fetchAdditionalData = async () => {
       const remainingIntervals = [
+        TIME_INTERVALS.ONE_MINUTE,
         TIME_INTERVALS.ONE_HOUR,
         TIME_INTERVALS.FOUR_HOURS,
         TIME_INTERVALS.ONE_DAY,
@@ -68,11 +123,27 @@ export const ChartManager = ({
           setSelectedTimeframe={setSelectedTimeframe}
         />
       </div>
+      <div className="flex place-items-center justify-end space-x-2 mb-2">
+        <Switch onCheckedChange={(e) => handleWs(e)} id="live-enable" />
+        <Label htmlFor="live-enable" className="text-md">
+          Live Mode
+        </Label>
+      </div>
       <Suspense fallback={<Skeleton className="w-full h-48" />}>
         {chartType === "baseline" ? (
-          <BaseLineChart data={baseLineData.get(selectedTimeframe)!} />
+          <BaseLineChart
+            data={baseLineData.get(selectedTimeframe)! as Array<LineChartItem>}
+            additionalData={liveData?.lineChartData}
+          />
         ) : (
-          <CandleStickChart data={candleStickData.get(selectedTimeframe)!} />
+          <CandleStickChart
+            data={
+              candleStickData.get(
+                selectedTimeframe,
+              )! as Array<CandleStickChartItem>
+            }
+            additionalData={liveData?.candleStickChartData}
+          />
         )}
       </Suspense>
     </div>

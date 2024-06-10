@@ -17,6 +17,9 @@ export const TimeToggle = ({
         setSelectedTimeframe(value);
       }}
     >
+      <ToggleGroupItem value="1m" aria-label="1 minute interval">
+        1m
+      </ToggleGroupItem>
       <ToggleGroupItem value="15m" aria-label="1 minute interval">
         15m
       </ToggleGroupItem>

@@ -1,20 +1,22 @@
-// src/utils/websocket.ts
-export interface WebSocketMessage {
-  method: string;
-  params: {
-    channel: string;
-    symbol: string[];
-    interval?: number;
-    snapshot?: boolean;
-    req_id?: number;
-  };
-}
+import { OHLCApiResponse, WebSocketMessage, WebSocketOHLCData } from "../types";
 
-export const createWebSocket = (url: string): WebSocket => {
+export const createWebSocket = (
+  url: string,
+  symbols: string[],
+  interval: number = 1,
+): WebSocket => {
   const socket = new WebSocket(url);
 
   socket.onopen = () => {
-    console.log("WebSocket connection opened");
+    const message: WebSocketMessage = {
+      method: "subscribe",
+      params: {
+        channel: "ohlc",
+        symbol: symbols,
+        interval,
+      },
+    };
+    socket.send(JSON.stringify(message));
   };
 
   socket.onclose = (event) => {
@@ -28,34 +30,25 @@ export const createWebSocket = (url: string): WebSocket => {
   return socket;
 };
 
-export const subscribeToOhlc = (
-  socket: WebSocket,
-  symbols: string[],
-  interval: number = 1,
-) => {
-  const message: WebSocketMessage = {
-    method: "subscribe",
-    params: {
-      channel: "ohlc",
-      symbol: symbols,
-      interval,
-    },
-  };
-
-  socket.send(JSON.stringify(message));
-};
-
 export const handleWebSocketMessage = (event: MessageEvent) => {
   const data = JSON.parse(event.data);
-
   if (data.channel === "ohlc") {
     if (data.type === "snapshot" || data.type === "update") {
-      console.log("Received OHLC data:", data.data);
-      // Handle the data (e.g., update state or call a callback function)
+      return {
+        error: [],
+        result: {
+          ohlcData: data.data.map((item: WebSocketOHLCData) => [
+            new Date(item.timestamp).getTime() / 1000,
+            item.open.toString(),
+            item.high.toString(),
+            item.low.toString(),
+            item.close.toString(),
+            item.vwap.toString(),
+            item.volume.toString(),
+            item.trades,
+          ]),
+        },
+      } as OHLCApiResponse;
     }
-  } else if (data.method === "subscribe") {
-    console.log("Subscription acknowledged:", data);
-  } else {
-    console.log("Received message:", data);
   }
 };
