@@ -2,14 +2,13 @@ import { BUNGEE_PUBLIC_URL } from "@/lib/constants";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const chainId = searchParams.get("chainId");
+  const owner = searchParams.get("owner");
+  const allowanceTarget = searchParams.get("allowanceTarget");
+  const tokenAddress = searchParams.get("tokenAddress");
+  const amount = searchParams.get("amount");
   try {
-    const searchParams = req.nextUrl.searchParams;
-    const chainId = searchParams.get("chainId");
-    const owner = searchParams.get("owner");
-    const allowanceTarget = searchParams.get("allowanceTarget");
-    const tokenAddress = searchParams.get("tokenAddress");
-    const amount = searchParams.get("amount");
-
     if (!chainId || !owner || !allowanceTarget || !tokenAddress || !amount) {
       return Response.json({ error: "Invalid parameters", status: 400 });
     }

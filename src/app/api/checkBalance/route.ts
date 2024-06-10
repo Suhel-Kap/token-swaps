@@ -18,12 +18,11 @@ const getClient = (chainId: number) => {
 };
 
 export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const chainId = searchParams.get("chainId");
+  const owner = searchParams.get("owner");
+  const tokenAddress = searchParams.get("tokenAddress");
   try {
-    const searchParams = req.nextUrl.searchParams;
-    const chainId = searchParams.get("chainId");
-    const owner = searchParams.get("owner");
-    const tokenAddress = searchParams.get("tokenAddress");
-
     if (!chainId || !owner || !tokenAddress) {
       return Response.json({ error: "Invalid parameters", status: 400 });
     }
