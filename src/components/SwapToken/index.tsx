@@ -4,15 +4,30 @@ import { useEffect, useState } from "react";
 import { FaArrowDownLong } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { FaGasPump } from "react-icons/fa";
 import { Separator } from "@/components/ui/separator";
 import { Route, SwapTokenProps, TOKEN } from "@/lib/types";
 import { TokenInput } from "./TokenInput";
 import { useAccount, useWalletClient } from "wagmi";
 import { getBalance } from "@/lib/swapUtils/getBalance";
-import { formatUnits, parseUnits } from "viem";
+import {
+  TransactionReceipt,
+  WalletClient,
+  formatUnits,
+  parseEther,
+  parseGwei,
+  parseUnits,
+} from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { getQuotes } from "@/lib/swapUtils/getQuotes";
 import { useToast } from "@/components/ui/use-toast";
+import { getRouteTransactionData } from "@/lib/swapUtils/getRouteTransactionData";
+import { checkAllowance } from "@/lib/swapUtils/checkAllowance";
+import { getApprovalTransactionData } from "@/lib/swapUtils/getApprovalTransactionData";
+import { getPublicClient } from "@/lib/swapUtils/getPublicClient";
+import { ToastAction } from "../ui/toast";
+import { getViemChain } from "@/lib/swapUtils/getViemChain";
+import { MATIC_ADDRESS_FOR_POLYGON } from "@/lib/constants";
 
 export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
   const [tokenIn, setTokenIn] = useState<TOKEN | null>(initialTokenIn);
@@ -23,6 +38,8 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [route, setRoute] = useState<Route | null>(null);
   const [fetching, setFetching] = useState<boolean>(false);
+  const [processingTransaction, setProcessingTransaction] =
+    useState<boolean>(false);
 
   const { openConnectModal } = useConnectModal();
   const { isConnected, address, chainId } = useAccount();
@@ -74,6 +91,190 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
     }
   }, [tokenInAmount, tokenIn, tokenOut]);
 
+  const handleSwap = async (route: Route, signer: WalletClient) => {
+    setProcessingTransaction(true);
+    try {
+      const transactionData = await getRouteTransactionData(route);
+      const chain = getViemChain(chainId!);
+
+      console.log("transactionData", transactionData);
+
+      if (transactionData?.approvalData !== null) {
+        const allowanceCheckResult = await checkAllowance({
+          allowanceTarget: transactionData?.approvalData.allowanceTarget!,
+          approvalTokenAddress:
+            transactionData?.approvalData.approvalTokenAddress!,
+          minimumApprovalAmount:
+            transactionData?.approvalData.minimumApprovalAmount!,
+          owner: transactionData?.approvalData.owner!,
+          chainId: chainId!,
+        });
+
+        const allowanceValue = allowanceCheckResult?.value!;
+
+        if (
+          transactionData?.approvalData.minimumApprovalAmount! > allowanceValue
+        ) {
+          toast({
+            title: "Approval Required",
+            description: "Please sign the approval transaction to continue",
+          });
+          const approvalTransactionData = await getApprovalTransactionData({
+            approvalTokenAddress:
+              transactionData?.approvalData.approvalTokenAddress!,
+            allowanceTarget: transactionData?.approvalData.allowanceTarget!,
+            minimumApprovalAmount:
+              transactionData?.approvalData.minimumApprovalAmount!,
+            owner: transactionData?.approvalData.owner!,
+            chainId: chainId!,
+          });
+
+          const publicClient = getPublicClient(chainId!);
+          const gasPrice = (await publicClient.getGasPrice()) + parseGwei("10");
+          console.log("gasPrice", gasPrice);
+
+          const gasEstimate = await publicClient.estimateGas({
+            account: address as `0x${string}`,
+            to: approvalTransactionData?.to! as `0x${string}`,
+            data: approvalTransactionData?.data! as `0x${string}`,
+            value: BigInt(0),
+            gasPrice: gasPrice,
+          });
+
+          console.log("gasEstimate", gasEstimate);
+
+          const approvalTransactionHash = await signer.sendTransaction({
+            account: address as `0x${string}`,
+            to: approvalTransactionData?.to! as `0x${string}`,
+            data: approvalTransactionData?.data! as `0x${string}`,
+            value: BigInt(0),
+            gasPrice: gasPrice,
+            gasLimit: gasEstimate,
+            chain,
+          });
+
+          toast({
+            title: "Approval Transaction Sent",
+            description: "Please wait for the transaction to be confirmed",
+          });
+
+          let transactionReceipt: TransactionReceipt | null = null;
+          while (transactionReceipt === null) {
+            transactionReceipt = await publicClient.waitForTransactionReceipt({
+              hash: approvalTransactionHash,
+            });
+            console.log("txnReceipt", transactionReceipt);
+
+            if (transactionReceipt.status === "success") {
+              toast({
+                title: "Transaction Confirmed",
+                description: "You have successfully approved tokens",
+                action: (
+                  <ToastAction
+                    altText="Transaction Link"
+                    onClick={() =>
+                      window.open(
+                        `${chain.blockExplorers.default.url}/tx/${transactionReceipt?.transactionHash!}`,
+                        "_blank",
+                      )
+                    }
+                  >
+                    Explorer
+                  </ToastAction>
+                ),
+              });
+            } else if (transactionReceipt.status === "reverted") {
+              toast({
+                title: "Transaction Failed",
+                description: "Please try again",
+              });
+            }
+          }
+        }
+      }
+
+      const publicClient = getPublicClient(chainId!);
+
+      const gasPrice = (await publicClient.getGasPrice()) + parseGwei("10");
+      console.log("gasPrice", gasPrice);
+
+      const value =
+        tokenIn?.tokenAddress === MATIC_ADDRESS_FOR_POLYGON
+          ? parseEther(tokenInAmount.toString())
+          : BigInt(0);
+      console.log("value", value);
+
+      const gasEstimate = await publicClient.estimateGas({
+        account: address as `0x${string}`,
+        to: transactionData?.txTarget! as `0x${string}`,
+        data: transactionData?.txData! as `0x${string}`,
+        value,
+        gasPrice: gasPrice,
+      });
+      console.log("gasEstimate", gasEstimate);
+
+      toast({
+        title: "Signature Required",
+        description: "Please sign the transaction to continue",
+      });
+
+      const transactionHash = await signer.sendTransaction({
+        account: address as `0x${string}`,
+        to: transactionData?.txTarget! as `0x${string}`,
+        data: transactionData?.txData! as `0x${string}`,
+        value,
+        gasPrice: gasPrice,
+        gasLimit: gasEstimate,
+        chain,
+      });
+
+      toast({
+        title: "Transaction Sent",
+        description: "Please wait for the transaction to be confirmed",
+      });
+
+      let transactionReceipt: TransactionReceipt | null = null;
+      while (transactionReceipt === null) {
+        transactionReceipt = await publicClient.waitForTransactionReceipt({
+          hash: transactionHash,
+        });
+        console.log("txnReceipt", transactionReceipt);
+
+        if (transactionReceipt.status === "success") {
+          toast({
+            title: "Transaction Confirmed",
+            description: "You have successfully approved tokens",
+            action: (
+              <ToastAction
+                altText="Transaction Link"
+                onClick={() =>
+                  window.open(
+                    `${chain.blockExplorers.default.url}/tx/${transactionReceipt?.transactionHash!}`,
+                    "_blank",
+                  )
+                }
+              >
+                Explorer
+              </ToastAction>
+            ),
+          });
+        } else if (transactionReceipt.status === "reverted") {
+          toast({
+            title: "Transaction Failed",
+            description: "Please try again",
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Transaction Failed",
+        description: "Please try again",
+      });
+    }
+    setProcessingTransaction(false);
+  };
+
   return (
     <Card className="max-w-lg w-[385px] mx-auto">
       <CardContent className="mt-4">
@@ -86,24 +287,35 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
           excludeToken={tokenOut}
         />
         {isConnected && balance && (
-          <div className="flex justify-end place-items-center mt-1">
-            <p className="text-xs text-gray-500">
-              Balance:{" "}
-              {parseFloat(
-                formatUnits(BigInt(balance), tokenIn?.decimals ?? 18),
-              ).toFixed(3)}
-            </p>
-            <Button
-              onClick={() => {
-                setTokenInAmount(
-                  Number(formatUnits(BigInt(balance), tokenIn?.decimals ?? 18)),
-                );
-              }}
-              className="h-5 p-2"
-              variant="ghost"
-            >
-              Max
-            </Button>
+          <div className="flex place-items-center justify-between mt-1">
+            <div>
+              {route && (
+                <p className="text-xs text-gray-500 pl-2">
+                  ${route?.inputValueInUsd}
+                </p>
+              )}
+            </div>
+            <div className="flex place-items-center">
+              <p className="text-xs text-gray-500">
+                Balance:{" "}
+                {parseFloat(
+                  formatUnits(BigInt(balance), tokenIn?.decimals ?? 18),
+                ).toPrecision(2)}
+              </p>
+              <Button
+                onClick={() => {
+                  setTokenInAmount(
+                    Number(
+                      formatUnits(BigInt(balance), tokenIn?.decimals ?? 18),
+                    ),
+                  );
+                }}
+                className="h-5 p-2"
+                variant="ghost"
+              >
+                Max
+              </Button>
+            </div>
           </div>
         )}
         <div className="flex justify-center relative mt-10 mb-6">
@@ -130,9 +342,16 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
           excludeToken={tokenIn}
           disabled={true}
         />
+        <div>
+          {route && (
+            <p className="text-xs text-gray-500 pl-2 mt-1">
+              ${route?.outputValueInUsd}
+            </p>
+          )}
+        </div>
       </CardContent>
       <CardFooter className="text-center">
-        <>
+        <div className="w-full">
           {!isConnected && (
             <Button
               variant="secondary"
@@ -166,6 +385,7 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
                     });
                     return;
                   }
+                  handleSwap(route, signer);
                 } else if (signer && route === null) {
                   toast({
                     duration: 5000,
@@ -174,12 +394,24 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
                   });
                 }
               }}
-              disabled={fetching}
+              disabled={fetching || processingTransaction}
             >
-              {fetching ? "Fetching..." : "Swap"}
+              {fetching
+                ? "Fetching..."
+                : processingTransaction
+                  ? "Processing Your Transaction..."
+                  : "Swap"}
             </Button>
           )}
-        </>
+          {route?.totalGasFeesInUsd && (
+            <div className="flex place-items-center space-x-1 mt-2 pl-2">
+              <FaGasPump className="text-gray-500 text-xs" />
+              <span className="text-gray-500 text-xs">
+                Gas Fee: ${route?.totalGasFeesInUsd.toFixed(3)}
+              </span>
+            </div>
+          )}
+        </div>
       </CardFooter>
     </Card>
   );

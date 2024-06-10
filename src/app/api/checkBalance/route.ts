@@ -1,21 +1,9 @@
 import { MATIC_ADDRESS_FOR_POLYGON } from "@/lib/constants";
+import { getPublicClient } from "@/lib/swapUtils/getPublicClient";
 import { NextRequest } from "next/server";
-import { createPublicClient, erc20Abi, http } from "viem";
-import { polygon } from "viem/chains";
+import { erc20Abi } from "viem";
 
-const polygonClient = createPublicClient({
-  chain: polygon,
-  transport: http(),
-});
-
-const getClient = (chainId: number) => {
-  switch (chainId) {
-    case 137:
-      return polygonClient;
-    default:
-      throw new Error("Unsupported chain");
-  }
-};
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -27,11 +15,14 @@ export async function GET(req: NextRequest) {
       return Response.json({ error: "Invalid parameters", status: 400 });
     }
 
-    const client = getClient(parseInt(chainId));
+    const client = getPublicClient(parseInt(chainId));
     let balance = BigInt(0);
+    const blockNumber = await client.getBlockNumber();
+
     if (tokenAddress === MATIC_ADDRESS_FOR_POLYGON) {
       balance = await client.getBalance({
         address: owner as `0x${string}`,
+        blockNumber,
       });
     } else {
       balance = await client.readContract({
@@ -39,8 +30,11 @@ export async function GET(req: NextRequest) {
         address: tokenAddress as `0x${string}`,
         functionName: "balanceOf",
         args: [owner as `0x${string}`],
+        blockNumber,
       });
     }
+
+    console.log(balance);
 
     return Response.json(
       {

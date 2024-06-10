@@ -21,7 +21,6 @@ export const getQuotes = async (
       },
     );
     const data = await response.json();
-    console.log(data);
 
     return data.result.routes[0] as Route;
   } catch (error) {

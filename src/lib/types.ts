@@ -149,12 +149,7 @@ export type RouteTransactionResult = {
   chainId: number;
   userTxIndex: number;
   value: string;
-  approvalData: {
-    minimumApprovalAmount: string;
-    approvalTokenAddress: string;
-    allowanceTarget: string;
-    owner: string;
-  };
+  approvalData: ApprovalData | null;
 };
 
 export type CheckAllowanceResult = {
@@ -165,7 +160,8 @@ export type CheckAllowanceResult = {
 export type TransactionData = {
   to: string;
   data: string;
-  value: string;
+  from: string;
+  value?: string;
 };
 
 export type SwapTokenProps = {
