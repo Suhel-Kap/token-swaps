@@ -5,6 +5,8 @@ import {
 } from "@/lib/constants";
 import { NextRequest } from "next/server";
 
+export const revalidate = 10;
+
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
