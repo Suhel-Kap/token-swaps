@@ -1,10 +1,6 @@
 import { ColorType } from "lightweight-charts";
 import { TOKEN } from "../types";
 
-export const COOKIE_KEYS = {
-  JWT: "jwt",
-};
-
 export const TOKEN_PAIRS: TOKEN[] = [
   {
     tickerName: "WBTCUSD",

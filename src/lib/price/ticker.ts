@@ -6,9 +6,7 @@ import {
 } from "../constants";
 import { TickerApiResponse, TickerData } from "../types";
 
-export const getTicker = async (
-  pair: string,
-): Promise<TickerApiResponse | null> => {
+export const getTicker = async (pair: string): Promise<TickerApiResponse> => {
   try {
     const response = await fetch(`${KRAKEN_PUBLIC_URL}/Ticker?pair=${pair}`, {
       method: "GET",
@@ -23,7 +21,7 @@ export const getTicker = async (
     return data as TickerApiResponse;
   } catch (error) {
     console.error(error);
-    return null;
+    throw new Error("Failed to fetch ticker data");
   }
 };
 
