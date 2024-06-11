@@ -11,7 +11,7 @@ import { TOKEN } from "@/lib/types";
 
 export default function Home() {
   return (
-    <div className="max-w-screen-lg mx-auto mt-4 flex flex-col justify-center items-center">
+    <div className="max-w-screen-lg max-h-full overflow-auto mx-auto">
       <Table>
         <TableHeader>
           <TableRow>

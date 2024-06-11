@@ -4,7 +4,7 @@ import ThemeSwitch from "../ThemeSwitch";
 
 export default function Header() {
   return (
-    <header className="bg-slate-50 dark:bg-neutral-950 h-16 flex place-items-center justify-center px-4">
+    <header className="bg-slate-50 dark:bg-neutral-950 h-16 flex place-items-center justify-center px-6">
       <div className="flex place-items-center max-w-screen-lg w-full justify-between">
         <h1 className="text-2xl font-semibold">
           <Link href="/">Token Swaps</Link>

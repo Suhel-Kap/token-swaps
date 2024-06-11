@@ -29,14 +29,14 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <Web3Provider>
-          <ColorSchemeProvider>
+        <ColorSchemeProvider>
+          <Web3Provider>
             <Header />
             {children}
             {modal}
             <div id="modal-root" />
-          </ColorSchemeProvider>
-        </Web3Provider>
+          </Web3Provider>
+        </ColorSchemeProvider>
         <Toaster />
       </body>
     </html>

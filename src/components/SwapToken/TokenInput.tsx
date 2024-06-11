@@ -39,10 +39,9 @@ export const TokenInput = ({
         <SelectTrigger className="w-2/5">
           {token ? token.symbol : "Select token"}
         </SelectTrigger>
-        <SelectContent className="z-[1500]" position="popper">
+        <SelectContent>
           {TOKEN_PAIRS.map((tkn, index) => (
             <SelectItem
-              className="z-[1500]"
               disabled={
                 excludeToken ? tkn.symbol === excludeToken.symbol : false
               }

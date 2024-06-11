@@ -15,7 +15,7 @@ export default function SwapModal({
     <Modal>
       <Suspense fallback={<Skeleton className="w-[385px]" />}>
         <SwapToken
-          className="border-none shadow-none"
+          className="border-none shadow-none dark:bg-slate-900"
           initialTokenIn={token!}
         />
       </Suspense>

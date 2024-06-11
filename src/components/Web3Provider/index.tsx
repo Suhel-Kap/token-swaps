@@ -5,6 +5,9 @@ import {
   getDefaultConfig,
   RainbowKitProvider,
   RainbowKitAuthenticationProvider,
+  darkTheme,
+  lightTheme,
+  Theme,
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { polygon } from "wagmi/chains";
@@ -12,6 +15,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { getAuthenticationAdapter } from "@/lib/auth/authenticationAdapter";
 import { isAuthAction } from "@/lib/actions/auth";
+import { useTheme } from "next-themes";
 
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
@@ -25,6 +29,7 @@ const queryClient = new QueryClient();
 export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
+  const { theme } = useTheme();
 
   const status = isLoading
     ? "loading"
@@ -47,11 +52,15 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
     return getAuthenticationAdapter(setIsAuth);
   }, []);
 
+  const rainbowTheme = theme === "light" ? lightTheme() : darkTheme();
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitAuthenticationProvider adapter={authAdapter} status={status}>
-          <RainbowKitProvider>{children}</RainbowKitProvider>
+          <RainbowKitProvider theme={rainbowTheme}>
+            {children}
+          </RainbowKitProvider>
         </RainbowKitAuthenticationProvider>
       </QueryClientProvider>
     </WagmiProvider>
