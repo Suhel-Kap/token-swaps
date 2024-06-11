@@ -3,7 +3,8 @@
 import { LegacyRef, useEffect, useRef, useState } from "react";
 import { createChart, ColorType, Time } from "lightweight-charts";
 import { BaseLineSeries, LineChartItem } from "@/lib/types";
-import { ASPECT_RATIO } from "@/lib/constants";
+import { ASPECT_RATIO, getChartColors } from "@/lib/constants";
+import { useTheme } from "next-themes";
 
 export const BaseLineChart = ({
   data,
@@ -15,35 +16,25 @@ export const BaseLineChart = ({
   const chartContainerRef = useRef<HTMLElement>();
   const latestTime = useRef<Time>(data[data.length - 1].time);
   const seriesRef = useRef<BaseLineSeries>();
+  const chartRef = useRef<ReturnType<typeof createChart>>();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const width = chartContainerRef?.current!.clientWidth;
     const handleResize = () => {
       chart.applyOptions({ width });
     };
-
+    const colors = getChartColors(theme ?? "light");
     const chart = createChart(chartContainerRef?.current!, {
-      layout: {
-        textColor: "#7c8298",
-        background: {
-          type: ColorType.Solid,
-          color: "#ffffff", //"#0d1520",
-        },
-      },
-      grid: {
-        vertLines: {
-          color: "#efefef", // "#333444",
-        },
-        horzLines: {
-          color: "#efefef", //"#333444",
-        },
-      },
+      ...colors,
       width,
       height: width / ASPECT_RATIO,
     });
     chart.timeScale().applyOptions({
       barSpacing: 10,
     });
+
+    chartRef.current = chart;
 
     const newSeries = chart.addBaselineSeries({
       topLineColor: "#14c684",
@@ -75,6 +66,12 @@ export const BaseLineChart = ({
       }
     }
   }, [additionalData]);
+
+  useEffect(() => {
+    if (chartRef.current) {
+      chartRef.current.applyOptions(getChartColors(theme ?? "light"));
+    }
+  }, [theme]);
 
   return <div ref={chartContainerRef as LegacyRef<HTMLDivElement>} />;
 };

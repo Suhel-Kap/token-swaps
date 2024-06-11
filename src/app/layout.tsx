@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/Header";
 import { Web3Provider } from "@/components/Web3Provider";
 import { Toaster } from "@/components/ui/toaster";
+import { ColorSchemeProvider } from "@/components/ColorSchemeProvider";
 
 const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -21,7 +22,7 @@ export default function RootLayout({
   modal: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
@@ -29,10 +30,12 @@ export default function RootLayout({
         )}
       >
         <Web3Provider>
-          <Header />
-          {children}
-          {modal}
-          <div id="modal-root" />
+          <ColorSchemeProvider>
+            <Header />
+            {children}
+            {modal}
+            <div id="modal-root" />
+          </ColorSchemeProvider>
         </Web3Provider>
         <Toaster />
       </body>

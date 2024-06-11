@@ -1,3 +1,4 @@
+import { ColorType } from "lightweight-charts";
 import { TOKEN } from "../types";
 
 export const COOKIE_KEYS = {
@@ -121,3 +122,24 @@ export const MATIC_ADDRESS_FOR_BUNGEE =
   "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export const MATIC_ADDRESS_FOR_POLYGON =
   "0x0000000000000000000000000000000000001010";
+
+export const getChartColors = (theme: string) => {
+  const chartColors = {
+    layout: {
+      textColor: "#7c8298",
+      background: {
+        type: ColorType.Solid,
+        color: theme === "light" ? "#ffffff" : "#0d1520",
+      },
+    },
+    grid: {
+      vertLines: {
+        color: theme === "light" ? "#efefef" : "#333444",
+      },
+      horzLines: {
+        color: theme === "light" ? "#efefef" : "#333444",
+      },
+    },
+  };
+  return chartColors;
+};
