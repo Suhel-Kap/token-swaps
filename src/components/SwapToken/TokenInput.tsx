@@ -26,11 +26,19 @@ export const TokenInput = ({
     <div className="flex items-center space-x-2">
       <Input
         placeholder="0.0"
-        className="w-3/5"
+        min={0}
+        className="w-3/5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         type="number"
         value={amount}
         disabled={disabled}
-        onChange={(e) => setAmount(parseFloat(e.target.value))}
+        onChange={(e) => {
+          let inputAmount = parseFloat(e.target.value);
+          // Fix user pasting negative number in input
+          if (inputAmount < 0) {
+            inputAmount = 0;
+          }
+          setAmount(inputAmount);
+        }}
       />
       <Select
         onValueChange={(symbol) => setToken(getTokenFromSymbol(symbol) || null)}
