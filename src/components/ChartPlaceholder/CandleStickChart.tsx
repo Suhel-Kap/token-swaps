@@ -3,6 +3,7 @@
 import { LegacyRef, useEffect, useRef, useState } from "react";
 import { createChart, ColorType, Time } from "lightweight-charts";
 import { CandleStickChartItem, CandleStickSeries } from "@/lib/types";
+import { ASPECT_RATIO } from "@/lib/constants";
 
 export const CandleStickChart = ({
   data,
@@ -16,8 +17,9 @@ export const CandleStickChart = ({
   const seriesRef = useRef<CandleStickSeries>();
 
   useEffect(() => {
+    const width = chartContainerRef?.current!.clientWidth;
     const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef?.current!.clientWidth });
+      chart.applyOptions({ width });
     };
 
     const chart = createChart(chartContainerRef?.current!, {
@@ -36,8 +38,8 @@ export const CandleStickChart = ({
           color: "#333444",
         },
       },
-      width: chartContainerRef?.current!.clientWidth,
-      height: 500,
+      width,
+      height: width / ASPECT_RATIO,
     });
     chart.timeScale().applyOptions({
       barSpacing: 20,

@@ -1,6 +1,7 @@
 import { ChartPlaceholder } from "@/components/ChartPlaceholder";
+import { CoinDetails } from "@/components/CoinDetails";
 
-export default function CoinDetails({
+export default function Coin({
   params,
 }: {
   params: {
@@ -9,7 +10,7 @@ export default function CoinDetails({
 }) {
   return (
     <div className="max-w-screen-lg mx-auto">
-      <h1>{params.tickerName}</h1>
+      <CoinDetails tickerName={params.tickerName} />
       <ChartPlaceholder tickerName={params.tickerName} />
     </div>
   );

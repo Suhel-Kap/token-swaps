@@ -12,6 +12,7 @@ import { useState, useEffect, Suspense } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { getOhlcData } from "@/lib/price/ohlc";
 import {
+  ASPECT_RATIO,
   KRAKEN_PUBLIC_WS_URL,
   TIME_INTERVALS,
   TOKEN_PAIRS,
@@ -27,6 +28,7 @@ import {
 import { createWebSocket, handleWebSocketMessage } from "@/lib/wesocket";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { AspectRatio } from "../ui/aspect-ratio";
 
 export const ChartManager = ({
   initialData,
@@ -129,7 +131,13 @@ export const ChartManager = ({
           Live Mode
         </Label>
       </div>
-      <Suspense fallback={<Skeleton className="w-full h-48" />}>
+      <Suspense
+        fallback={
+          <AspectRatio ratio={ASPECT_RATIO}>
+            <Skeleton className="w-full" />
+          </AspectRatio>
+        }
+      >
         {chartType === "baseline" ? (
           <BaseLineChart
             data={baseLineData.get(selectedTimeframe)! as Array<LineChartItem>}

@@ -1,17 +1,13 @@
 import PriceTableRow from "@/components/PriceTableRow";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
-  TableCaption,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { TOKEN_PAIRS } from "@/lib/constants";
 import { TOKEN } from "@/lib/types";
-import Image from "next/image";
 
 export default function Home() {
   return (
