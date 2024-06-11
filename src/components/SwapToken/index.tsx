@@ -15,6 +15,7 @@ import {
   parseEther,
   parseGwei,
   parseUnits,
+  zeroAddress,
 } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { getQuotes } from "@/lib/swapUtils/getQuotes";
@@ -28,8 +29,9 @@ import { getViemChain } from "@/lib/swapUtils/getViemChain";
 import { handleApprovalTransaction } from "@/lib/swapUtils/handleApprovalTransaction";
 import { handleTransactionReceipt } from "@/lib/swapUtils/handleTransactionReceipt";
 import { MyToast } from "./MyToast";
+import { cn } from "@/lib/utils";
 
-export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
+export const SwapToken = ({ initialTokenIn, className }: SwapTokenProps) => {
   const [tokenIn, setTokenIn] = useState<TOKEN | null>(initialTokenIn);
   const [tokenOut, setTokenOut] = useState<TOKEN | null>(null);
   const [tokenInAmount, setTokenInAmount] = useState<number>(0);
@@ -64,8 +66,8 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
         setTimeout(() => {
           setFetching(true);
           getQuotes(
-            chainId!,
-            address as string,
+            chainId ?? 137,
+            (address as string) ?? zeroAddress,
             tokenIn,
             tokenOut,
             parseUnits(
@@ -208,7 +210,7 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
   };
 
   return (
-    <Card className="max-w-lg w-[385px] mx-auto">
+    <Card className={cn("max-w-lg w-[385px] mx-auto", className ?? "")}>
       <CardContent className="mt-4">
         <TokenInput
           label="Sell"
@@ -218,15 +220,15 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
           setAmount={setTokenInAmount}
           excludeToken={tokenOut}
         />
-        {isConnected && balance && (
-          <div className="flex place-items-center justify-between mt-1">
-            <div>
-              {route && (
-                <p className="text-xs text-gray-500 pl-2">
-                  ${route?.inputValueInUsd}
-                </p>
-              )}
-            </div>
+        <div className="flex place-items-center justify-between mt-1">
+          <div>
+            {route && (
+              <p className="text-xs text-gray-500 pl-2">
+                ${route?.inputValueInUsd}
+              </p>
+            )}
+          </div>
+          {balance && (
             <div className="flex place-items-center">
               <p className="text-xs text-gray-500">
                 Balance:{" "}
@@ -248,8 +250,8 @@ export const SwapToken = ({ initialTokenIn }: SwapTokenProps) => {
                 Max
               </Button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
         <div className="flex justify-center relative mt-10 mb-6">
           <Separator />
           <Button

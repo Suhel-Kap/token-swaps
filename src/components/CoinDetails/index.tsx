@@ -14,7 +14,7 @@ export const CoinDetails = async ({ tickerName }: { tickerName: string }) => {
     100;
 
   return (
-    <div className="my-4">
+    <div className="my-4 col-span-3">
       <div className="flex space-x-2 place-items-center my-3">
         <Image
           alt="token-image"

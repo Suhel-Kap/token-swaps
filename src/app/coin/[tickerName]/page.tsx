@@ -1,5 +1,7 @@
 import { ChartPlaceholder } from "@/components/ChartPlaceholder";
 import { CoinDetails } from "@/components/CoinDetails";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Coin({
   params,
@@ -10,7 +12,14 @@ export default function Coin({
 }) {
   return (
     <div className="max-w-screen-lg mx-auto">
-      <CoinDetails tickerName={params.tickerName} />
+      <div className="grid grid-cols-4">
+        <CoinDetails tickerName={params.tickerName} />
+        <div className="col-span-1 flex items-center justify-end">
+          <Link href={`/trade/${params.tickerName}`}>
+            <Button className="w-20">Trade</Button>
+          </Link>
+        </div>
+      </div>
       <ChartPlaceholder tickerName={params.tickerName} />
     </div>
   );

@@ -27,15 +27,15 @@ export const CandleStickChart = ({
         textColor: "#7c8298",
         background: {
           type: ColorType.Solid,
-          color: "#0d1520",
+          color: "#ffffff", //"#0d1520",
         },
       },
       grid: {
         vertLines: {
-          color: "#333444",
+          color: "#efefef", // "#333444",
         },
         horzLines: {
-          color: "#333444",
+          color: "#efefef", //"#333444",
         },
       },
       width,

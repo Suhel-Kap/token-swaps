@@ -5,6 +5,7 @@ import { getAllTickers } from "@/lib/price/ticker";
 import { Button } from "../ui/button";
 import { AiFillCaretUp, AiFillCaretDown } from "react-icons/ai";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default async function PriceTableRow({ token }: { token: TOKEN }) {
   const price = await getAllTickers();
@@ -21,7 +22,7 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
               width={30}
               height={30}
             />
-            {token.displayName}
+            <p className="text-base">{token.displayName}</p>
           </div>
         </Link>
       </TableCell>
@@ -29,14 +30,20 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
         <Link href={`/coin/${token.tickerName}`}>{token.symbol}</Link>
       </TableCell>
       <TableCell
-        className={`${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`}
+        className={cn(
+          "font-semibold",
+          `${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`,
+        )}
       >
         <Link href={`/coin/${token.tickerName}`}>
           ${parseFloat(price?.[token.tickerName].price as string).toFixed(2)}
         </Link>
       </TableCell>
       <TableCell
-        className={`${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`}
+        className={cn(
+          "font-semibold",
+          `${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`,
+        )}
       >
         <Link
           className="flex place-items-center"

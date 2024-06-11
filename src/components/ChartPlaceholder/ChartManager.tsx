@@ -29,6 +29,7 @@ import { createWebSocket, handleWebSocketMessage } from "@/lib/wesocket";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { AspectRatio } from "../ui/aspect-ratio";
+import { Card, CardContent, CardHeader } from "../ui/card";
 
 export const ChartManager = ({
   initialData,
@@ -114,46 +115,54 @@ export const ChartManager = ({
   );
 
   return (
-    <div>
-      <div className="flex justify-between mb-2 p-2">
-        <ChartToggle
-          selectedChart={chartType}
-          setSelectedChart={setChartType}
-        />
-        <TimeToggle
-          selectedTimeframe={selectedTimeframe}
-          setSelectedTimeframe={setSelectedTimeframe}
-        />
-      </div>
-      <div className="flex place-items-center justify-end space-x-2 mb-2">
-        <Switch onCheckedChange={(e) => handleWs(e)} id="live-enable" />
-        <Label htmlFor="live-enable" className="text-md">
-          Live Mode
-        </Label>
-      </div>
-      <Suspense
-        fallback={
-          <AspectRatio ratio={ASPECT_RATIO}>
-            <Skeleton className="w-full" />
-          </AspectRatio>
-        }
-      >
-        {chartType === "baseline" ? (
-          <BaseLineChart
-            data={baseLineData.get(selectedTimeframe)! as Array<LineChartItem>}
-            additionalData={liveData?.lineChartData}
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between mb-2 p-2">
+          <div className="flex space-x-2 place-items-end">
+            <ChartToggle
+              selectedChart={chartType}
+              setSelectedChart={setChartType}
+            />
+            <div className="flex place-items-center justify-end space-x-2 mb-2">
+              <Switch onCheckedChange={(e) => handleWs(e)} id="live-enable" />
+              <Label htmlFor="live-enable" className="text-md">
+                Live Mode
+              </Label>
+            </div>
+          </div>
+          <TimeToggle
+            selectedTimeframe={selectedTimeframe}
+            setSelectedTimeframe={setSelectedTimeframe}
           />
-        ) : (
-          <CandleStickChart
-            data={
-              candleStickData.get(
-                selectedTimeframe,
-              )! as Array<CandleStickChartItem>
-            }
-            additionalData={liveData?.candleStickChartData}
-          />
-        )}
-      </Suspense>
-    </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Suspense
+          fallback={
+            <AspectRatio ratio={ASPECT_RATIO}>
+              <Skeleton className="w-full" />
+            </AspectRatio>
+          }
+        >
+          {chartType === "baseline" ? (
+            <BaseLineChart
+              data={
+                baseLineData.get(selectedTimeframe)! as Array<LineChartItem>
+              }
+              additionalData={liveData?.lineChartData}
+            />
+          ) : (
+            <CandleStickChart
+              data={
+                candleStickData.get(
+                  selectedTimeframe,
+                )! as Array<CandleStickChartItem>
+              }
+              additionalData={liveData?.candleStickChartData}
+            />
+          )}
+        </Suspense>
+      </CardContent>
+    </Card>
   );
 };
