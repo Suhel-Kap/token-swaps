@@ -12,6 +12,7 @@ import {
   WhitespaceData,
 } from "lightweight-charts";
 import { Dispatch, SetStateAction } from "react";
+import { SiweMessage } from "siwe";
 
 export type TOKEN = {
   tickerName: string;
@@ -238,4 +239,9 @@ export type PageProps = {
   params: {
     tickerName: string;
   };
+};
+
+export type IronSession = {
+  nonce: string;
+  siwe: SiweMessage;
 };

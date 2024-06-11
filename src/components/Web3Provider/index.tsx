@@ -13,7 +13,7 @@ import { polygon } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { getAuthenticationAdapter } from "@/lib/auth/authenticationAdapter";
-import { isAuthAction } from "@/lib/auth";
+import { isAuth } from "@/lib/auth";
 import { useTheme } from "next-themes";
 
 const config = getDefaultConfig({
@@ -38,9 +38,9 @@ export const Web3Provider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const checkStatus = async () => {
-      const isAuth = await isAuthAction();
+      const _isAuth = await isAuth();
 
-      setIsAuthenticated(isAuth);
+      setIsAuthenticated(_isAuth);
       setIsLoading(false);
     };
     checkStatus();

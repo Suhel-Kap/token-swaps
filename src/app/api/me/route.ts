@@ -10,6 +10,5 @@ export async function GET(request: Request) {
     IRON_OPTIONS,
   );
 
-  // res.send({ address: req.session.siwe?.address });
   return NextResponse.json({ address: session.siwe?.address }, { status: 200 });
 }

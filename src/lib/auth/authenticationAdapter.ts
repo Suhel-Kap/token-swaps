@@ -1,6 +1,5 @@
 import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
-import { signInAction, signOutAction } from "./index";
 
 export const getAuthenticationAdapter = (
   setAuthStatus: (status: boolean) => void,
@@ -8,9 +7,14 @@ export const getAuthenticationAdapter = (
   return createAuthenticationAdapter({
     getNonce: async () => {
       const response = await fetch("/api/nonce");
+
+      if (!response.ok) {
+        throw new Error("Failed to verify signature");
+      }
+
       const data: { nonce: string } = await response.json();
 
-      return new Promise((resolve) => resolve(data.nonce));
+      return data.nonce;
     },
     createMessage: ({ nonce, address, chainId }) => {
       return new SiweMessage({
@@ -36,9 +40,6 @@ export const getAuthenticationAdapter = (
       if (!response.ok) {
         throw new Error("Failed to verify signature");
       }
-      const data = await response.json();
-
-      await signInAction({ jwt: data.jwt });
 
       setAuthStatus(true);
 
@@ -46,7 +47,6 @@ export const getAuthenticationAdapter = (
     },
     signOut: async () => {
       await fetch("/api/logout");
-      await signOutAction();
 
       setAuthStatus(false);
     },
