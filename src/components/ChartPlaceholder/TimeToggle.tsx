@@ -11,6 +11,7 @@ export const TimeToggle = ({
     <ToggleGroup
       variant="outline"
       type="single"
+      className="flex flex-row space-x-2 md:space-x-0 justify-between"
       value={selectedTimeframe}
       onValueChange={(value) => {
         if (value === "") return;

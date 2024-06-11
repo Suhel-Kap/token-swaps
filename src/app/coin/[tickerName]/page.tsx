@@ -12,7 +12,7 @@ export default function Coin({
 }) {
   return (
     <div className="max-w-screen-lg mx-auto">
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-4 px-3 md:px-0">
         <CoinDetails tickerName={params.tickerName} />
         <div className="col-span-1 flex items-center justify-end">
           <Link href={`/trade/${params.tickerName}`}>

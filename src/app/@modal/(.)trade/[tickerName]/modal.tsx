@@ -18,7 +18,7 @@ export function Modal({ children }: { children: React.ReactNode }) {
   }, []);
 
   function onDismiss() {
-    document.body.style.overflow = "auto";
+    document.body.style.overflow = "visible";
     router.back();
   }
 

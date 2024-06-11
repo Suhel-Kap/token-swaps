@@ -22,7 +22,7 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
               width={30}
               height={30}
             />
-            <p className="text-base">{token.displayName}</p>
+            <p className="text-md md:text-base">{token.displayName}</p>
           </div>
         </Link>
       </TableCell>

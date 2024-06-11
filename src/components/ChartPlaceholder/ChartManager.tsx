@@ -108,6 +108,15 @@ export const ChartManager = ({
     fetchAdditionalData();
   }, [initialData, tickerName]);
 
+  useEffect(() => {
+    if (socket) {
+      closeWs();
+      setTimeout(() => {
+        openWs();
+      }, 1000);
+    }
+  }, [selectedTimeframe]);
+
   const baseLineData = prepareChartData(ohlcData, prepareLineChartData);
   const candleStickData = prepareChartData(
     ohlcData,
@@ -115,17 +124,17 @@ export const ChartManager = ({
   );
 
   return (
-    <Card>
+    <Card className="mx-2 md:mx-0">
       <CardHeader>
-        <div className="flex justify-between mb-2 p-2">
-          <div className="flex space-x-2 place-items-end">
+        <div className="flex flex-col items-start space-y-2 md:space-y-0 md:flex-row md:justify-between mb-2 p-2">
+          <div className="flex space-x-2 place-items-end justify-between w-full md:w-auto">
             <ChartToggle
               selectedChart={chartType}
               setSelectedChart={setChartType}
             />
-            <div className="flex place-items-center justify-end space-x-2 mb-2">
+            <div className="flex place-items-center justify-end space-x-1 md:space-x-2 mb-2">
               <Switch onCheckedChange={(e) => handleWs(e)} id="live-enable" />
-              <Label htmlFor="live-enable" className="text-md">
+              <Label htmlFor="live-enable" className="text-sm md:text-md">
                 Live Mode
               </Label>
             </div>

@@ -99,14 +99,13 @@ export const SwapToken = ({ initialTokenIn, className }: SwapTokenProps) => {
       const transactionData = await getRouteTransactionData(route);
       const chain = getViemChain(chainId!);
 
-      const {
-        allowanceTarget,
-        approvalTokenAddress,
-        minimumApprovalAmount,
-        owner,
-      } = transactionData?.approvalData!;
-
       if (transactionData?.approvalData !== null) {
+        const {
+          allowanceTarget,
+          approvalTokenAddress,
+          minimumApprovalAmount,
+          owner,
+        } = transactionData?.approvalData!;
         const allowanceCheckResult = await checkAllowance({
           allowanceTarget,
           approvalTokenAddress,
