@@ -1,6 +1,6 @@
 import { createAuthenticationAdapter } from "@rainbow-me/rainbowkit";
 import { SiweMessage } from "siwe";
-import { signInAction, signOutAction } from "../actions/auth";
+import { signInAction, signOutAction } from "./index";
 
 export const getAuthenticationAdapter = (
   setAuthStatus: (status: boolean) => void,

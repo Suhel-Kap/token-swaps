@@ -14,5 +14,5 @@ export async function signOutAction() {
 export async function isAuthAction() {
   const jwt = cookies().get(COOKIE_KEYS.JWT)?.value;
 
-  return { isAuth: Boolean(jwt) };
+  return Boolean(jwt);
 }
