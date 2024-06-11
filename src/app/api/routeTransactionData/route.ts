@@ -1,6 +1,11 @@
+import { IRON_OPTIONS } from "@/lib/config/session";
 import { BUNGEE_PUBLIC_URL } from "@/lib/constants";
 import { Route } from "@/lib/types";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
+import { SiweMessage } from "siwe";
+import { isAddressEqual } from "viem";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,6 +14,20 @@ export async function POST(req: NextRequest) {
     // body should contain an object {route: route}
     if (!body.route) {
       return Response.json({ error: "Invalid parameters", status: 400 });
+    }
+
+    const session = await getIronSession<{ siwe: SiweMessage }>(
+      cookies(),
+      IRON_OPTIONS,
+    );
+
+    if (
+      isAddressEqual(
+        session.siwe?.address as `0x${string}`,
+        body.route.sender as `0x${string}`,
+      )
+    ) {
+      return Response.json({ error: "Unauthorized", status: 401 });
     }
 
     const response = await fetch(`${BUNGEE_PUBLIC_URL}/build-tx`, {
