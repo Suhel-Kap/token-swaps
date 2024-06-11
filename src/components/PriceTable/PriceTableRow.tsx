@@ -29,16 +29,8 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
         </Link>
       </TableCell>
       <TableCell>
-        <Link href={`/coin/${token.tickerName}`}>{token.symbol}</Link>
-      </TableCell>
-      <TableCell
-        className={cn(
-          "font-semibold",
-          `${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`,
-        )}
-      >
         <Link href={`/coin/${token.tickerName}`}>
-          ${parseFloat(price?.[token.tickerName].price as string).toFixed(2)}
+          <p className="w-full">{token.symbol}</p>
         </Link>
       </TableCell>
       <TableCell
@@ -47,12 +39,24 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
           `${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`,
         )}
       >
-        <Link
-          className="flex place-items-center"
-          href={`/coin/${token.tickerName}`}
-        >
-          {priceIncreased ? <AiFillCaretUp /> : <AiFillCaretDown />}
-          {price?.[token.tickerName].percentage.toFixed(2)}%
+        <Link href={`/coin/${token.tickerName}`}>
+          <p className="w-full">
+            {" "}
+            ${parseFloat(price?.[token.tickerName].price as string).toFixed(2)}
+          </p>
+        </Link>
+      </TableCell>
+      <TableCell
+        className={cn(
+          "font-semibold",
+          `${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`,
+        )}
+      >
+        <Link href={`/coin/${token.tickerName}`}>
+          <div className="flex place-items-center w-full">
+            <p>{priceIncreased ? <AiFillCaretUp /> : <AiFillCaretDown />}</p>
+            <p>{price?.[token.tickerName].percentage.toFixed(2)}%</p>
+          </div>
         </Link>
       </TableCell>
       <TableCell>
