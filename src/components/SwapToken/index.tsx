@@ -30,8 +30,13 @@ import { handleApprovalTransaction } from "@/lib/swapUtils/handleApprovalTransac
 import { handleTransactionReceipt } from "@/lib/swapUtils/handleTransactionReceipt";
 import { MyToast } from "./MyToast";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
-export const SwapToken = ({ initialTokenIn, className }: SwapTokenProps) => {
+export const SwapToken = ({
+  initialTokenIn,
+  className,
+  isModal,
+}: SwapTokenProps) => {
   const [tokenIn, setTokenIn] = useState<TOKEN | null>(initialTokenIn);
   const [tokenOut, setTokenOut] = useState<TOKEN | null>(null);
   const [tokenInAmount, setTokenInAmount] = useState<number>(0);
@@ -47,6 +52,7 @@ export const SwapToken = ({ initialTokenIn, className }: SwapTokenProps) => {
   const { isConnected, address, chainId } = useAccount();
   const { data: signer } = useWalletClient();
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     if (tokenIn && isConnected) {
@@ -291,6 +297,9 @@ export const SwapToken = ({ initialTokenIn, className }: SwapTokenProps) => {
               className="w-full"
               onClick={() => {
                 if (openConnectModal) {
+                  if (isModal) {
+                    router.back();
+                  }
                   openConnectModal();
                 }
               }}

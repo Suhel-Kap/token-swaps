@@ -194,6 +194,7 @@ export type TransactionData = {
 export type SwapTokenProps = {
   initialTokenIn: TOKEN;
   className?: string;
+  isModal?: boolean;
 };
 
 export type TokenInputProps = {

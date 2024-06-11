@@ -14,6 +14,7 @@ export default function SwapModal({ params: { tickerName } }: PageProps) {
         <SwapToken
           className="border-none shadow-none dark:bg-slate-900"
           initialTokenIn={token!}
+          isModal={true}
         />
       </Suspense>
     </Modal>

@@ -6,6 +6,7 @@ import Image from "next/image";
 export const CoinDetails = async ({ tickerName }: { tickerName: string }) => {
   const tokenPriceDetails = await getTicker(tickerName);
   const token = TOKEN_PAIRS.find((token) => token.tickerName === tickerName);
+
   const price = tokenPriceDetails?.result[tickerName].c[0];
   const openingPrice = tokenPriceDetails?.result[tickerName].o;
   const percentage =
