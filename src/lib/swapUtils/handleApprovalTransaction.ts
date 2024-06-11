@@ -1,4 +1,4 @@
-import { WalletClient, parseGwei } from "viem";
+import { Address, WalletClient, parseGwei } from "viem";
 import { TransactionData } from "../types";
 import { getViemChain } from "./getViemChain";
 import { getPublicClient } from "./getPublicClient";
@@ -13,17 +13,17 @@ export const handleApprovalTransaction = async (
   const address = signer.account?.address;
 
   const gasEstimate = await publicClient.estimateGas({
-    account: address as `0x${string}`,
-    to: transactionData.to as `0x${string}`,
-    data: transactionData.data as `0x${string}`,
+    account: address as Address,
+    to: transactionData.to as Address,
+    data: transactionData.data as Address,
     value: BigInt(0),
     gasPrice: gasPrice,
   });
 
   const approvalTransactionHash = await signer.sendTransaction({
-    account: address as `0x${string}`,
-    to: transactionData.to as `0x${string}`,
-    data: transactionData.data as `0x${string}`,
+    account: address as Address,
+    to: transactionData.to as Address,
+    data: transactionData.data as Address,
     value: BigInt(0),
     gasPrice: gasPrice,
     gasLimit: gasEstimate,

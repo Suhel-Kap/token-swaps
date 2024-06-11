@@ -5,7 +5,7 @@ import { getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import { SiweMessage } from "siwe";
-import { isAddressEqual } from "viem";
+import { Address, isAddressEqual } from "viem";
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
 
     if (
       isAddressEqual(
-        session.siwe?.address as `0x${string}`,
-        body.route.sender as `0x${string}`,
+        session.siwe?.address as Address,
+        body.route.sender as Address,
       )
     ) {
       return Response.json({ error: "Unauthorized", status: 401 });

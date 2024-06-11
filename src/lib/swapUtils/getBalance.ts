@@ -1,4 +1,4 @@
-import { erc20Abi } from "viem";
+import { Address, erc20Abi } from "viem";
 import { MATIC_ADDRESS_FOR_POLYGON } from "../constants";
 import { TOKEN } from "../types";
 import { getPublicClient } from "./getPublicClient";
@@ -15,15 +15,15 @@ export const getBalance = async (
 
     if (token.tokenAddress === MATIC_ADDRESS_FOR_POLYGON) {
       balance = await client.getBalance({
-        address: address as `0x${string}`,
+        address: address as Address,
         blockNumber,
       });
     } else {
       balance = await client.readContract({
         abi: erc20Abi,
-        address: token.tokenAddress as `0x${string}`,
+        address: token.tokenAddress as Address,
         functionName: "balanceOf",
-        args: [address as `0x${string}`],
+        args: [address as Address],
         blockNumber,
       });
     }

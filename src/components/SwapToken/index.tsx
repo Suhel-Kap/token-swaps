@@ -10,6 +10,7 @@ import { TokenInput } from "./TokenInput";
 import { useAccount, useWalletClient } from "wagmi";
 import { getBalance } from "@/lib/swapUtils/getBalance";
 import {
+  Address,
   WalletClient,
   formatUnits,
   parseEther,
@@ -167,9 +168,9 @@ export const SwapToken = ({
         : BigInt(0);
 
       const gasEstimate = await publicClient.estimateGas({
-        account: address as `0x${string}`,
-        to: transactionData?.txTarget! as `0x${string}`,
-        data: transactionData?.txData! as `0x${string}`,
+        account: address as Address,
+        to: transactionData?.txTarget! as Address,
+        data: transactionData?.txData! as Address,
         value,
         gasPrice: gasPrice,
       });
@@ -180,9 +181,9 @@ export const SwapToken = ({
       });
 
       const transactionHash = await signer.sendTransaction({
-        account: address as `0x${string}`,
-        to: transactionData?.txTarget! as `0x${string}`,
-        data: transactionData?.txData! as `0x${string}`,
+        account: address as Address,
+        to: transactionData?.txTarget! as Address,
+        data: transactionData?.txData! as Address,
         value,
         gasPrice: gasPrice,
         gasLimit: gasEstimate,

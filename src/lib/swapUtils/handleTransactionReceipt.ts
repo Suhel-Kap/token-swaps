@@ -1,4 +1,4 @@
-import { TransactionReceipt } from "viem";
+import { Address, TransactionReceipt } from "viem";
 import { getPublicClient } from "./getPublicClient";
 import { getViemChain } from "./getViemChain";
 
@@ -12,7 +12,7 @@ export const handleTransactionReceipt = async (
 
   while (transactionReceipt === null) {
     transactionReceipt = await publicClient.waitForTransactionReceipt({
-      hash: transactionHash as `0x${string}`,
+      hash: transactionHash as Address,
     });
 
     if (transactionReceipt.status === "success") {
