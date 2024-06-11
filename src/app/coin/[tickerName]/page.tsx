@@ -1,15 +1,10 @@
 import { ChartPlaceholder } from "@/components/ChartPlaceholder";
 import { CoinDetails } from "@/components/CoinDetails";
 import { Button } from "@/components/ui/button";
+import { PageProps } from "@/lib/types";
 import Link from "next/link";
 
-export default function Coin({
-  params,
-}: {
-  params: {
-    tickerName: string;
-  };
-}) {
+export default function Coin({ params }: PageProps) {
   return (
     <div className="max-w-screen-lg mx-auto">
       <div className="grid grid-cols-4 px-3 md:px-0">
@@ -23,4 +18,11 @@ export default function Coin({
       <ChartPlaceholder tickerName={params.tickerName} />
     </div>
   );
+}
+
+export function generateMetadata({ params }: PageProps) {
+  return {
+    title: `${params.tickerName} | Coin Detail`,
+    description: `Details of ${params.tickerName} coin`,
+  };
 }

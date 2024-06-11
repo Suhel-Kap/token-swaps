@@ -232,3 +232,9 @@ export type CandleStickSeries = ISeriesApi<
   CandlestickSeriesOptions,
   DeepPartial<CandlestickStyleOptions & SeriesOptionsCommon>
 >;
+
+export type PageProps = {
+  params: {
+    tickerName: string;
+  };
+};

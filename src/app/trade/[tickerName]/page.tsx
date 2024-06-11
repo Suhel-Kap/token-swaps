@@ -1,15 +1,10 @@
 import { SwapToken } from "@/components/SwapToken";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TOKEN_PAIRS } from "@/lib/constants";
+import { PageProps } from "@/lib/types";
 import { Suspense } from "react";
 
-export default function Trade({
-  params,
-}: {
-  params: {
-    tickerName: string;
-  };
-}) {
+export default function Trade({ params }: PageProps) {
   const token = TOKEN_PAIRS.find(
     (pair) => pair.tickerName === params.tickerName,
   );
@@ -21,4 +16,14 @@ export default function Trade({
       </Suspense>
     </div>
   );
+}
+
+export function generateMetadata({ params }: PageProps) {
+  const token = TOKEN_PAIRS.find(
+    (pair) => pair.tickerName === params.tickerName,
+  );
+  return {
+    title: `Trade ${token?.displayName}`,
+    description: `Trade ${token?.displayName}`,
+  };
 }

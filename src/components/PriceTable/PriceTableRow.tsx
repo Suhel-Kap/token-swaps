@@ -8,6 +8,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export default async function PriceTableRow({ token }: { token: TOKEN }) {
+  // callling getAllTickers because we can fetch all token balances in one single API call to Kraken
+  // and cache the responses for different tokens
   const price = await getAllTickers();
   const priceIncreased = (price?.[token.tickerName].percentage as number) > 0;
 

@@ -3,12 +3,9 @@ import { Modal } from "./modal";
 import { SwapToken } from "@/components/SwapToken";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TOKEN_PAIRS } from "@/lib/constants";
+import { PageProps } from "@/lib/types";
 
-export default function SwapModal({
-  params: { tickerName },
-}: {
-  params: { tickerName: string };
-}) {
+export default function SwapModal({ params: { tickerName } }: PageProps) {
   const token = TOKEN_PAIRS.find((pair) => pair.tickerName === tickerName);
 
   return (
@@ -21,4 +18,14 @@ export default function SwapModal({
       </Suspense>
     </Modal>
   );
+}
+
+export function generateMetadata({ params }: PageProps) {
+  const token = TOKEN_PAIRS.find(
+    (pair) => pair.tickerName === params.tickerName,
+  );
+  return {
+    title: `Trade ${token?.displayName}`,
+    description: `Trade ${token?.displayName}`,
+  };
 }
