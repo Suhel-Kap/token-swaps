@@ -1,5 +1,8 @@
 import { ColorType } from "lightweight-charts";
 import { TOKEN } from "../types";
+import { polygon } from "viem/chains";
+
+export const SUPPORTED_CHAINS = [polygon];
 
 export const TOKEN_PAIRS: TOKEN[] = [
   {

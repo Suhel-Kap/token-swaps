@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MyConnectButton } from "./ConnectButton";
+import { ConnectButton } from "./ConnectButton";
 import ThemeSwitch from "../ThemeSwitch";
 
 export default function Header() {
@@ -10,7 +10,7 @@ export default function Header() {
           <Link href="/">Token Swaps</Link>
         </h1>
         <div className="flex space-x-2 place-items-center">
-          <MyConnectButton />
+          <ConnectButton />
           <ThemeSwitch />
         </div>
       </div>

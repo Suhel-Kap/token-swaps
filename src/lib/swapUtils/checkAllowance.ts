@@ -7,7 +7,7 @@ export const checkAllowance = async ({
   chainId,
 }: ApprovalData & {
   chainId: number;
-}): Promise<CheckAllowanceResult | null> => {
+}): Promise<CheckAllowanceResult> => {
   try {
     const response = await fetch(
       `/api/checkAllowance?chainId=${chainId}&owner=${owner}&allowanceTarget=${allowanceTarget}&tokenAddress=${approvalTokenAddress}`,
@@ -26,6 +26,6 @@ export const checkAllowance = async ({
     return data.result as CheckAllowanceResult;
   } catch (error) {
     console.error(error);
-    return null;
+    throw new Error("Check allowance failed");
   }
 };

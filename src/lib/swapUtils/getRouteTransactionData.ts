@@ -15,6 +15,6 @@ export const getRouteTransactionData = async (route: Route) => {
     return data.result as RouteTransactionResult;
   } catch (error) {
     console.error(error);
-    return null;
+    throw new Error("Erorr fetching route transaction data");
   }
 };

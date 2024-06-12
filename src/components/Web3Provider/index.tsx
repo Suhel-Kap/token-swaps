@@ -9,17 +9,17 @@ import {
   lightTheme,
 } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import { polygon } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { getAuthenticationAdapter } from "@/lib/auth/authenticationAdapter";
 import { isAuth } from "@/lib/auth";
 import { useTheme } from "next-themes";
+import { SUPPORTED_CHAINS } from "@/lib/constants";
 
 const config = getDefaultConfig({
   appName: "Token Swaps",
   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID!,
-  chains: [polygon],
+  chains: [SUPPORTED_CHAINS[0]],
   ssr: true,
 });
 

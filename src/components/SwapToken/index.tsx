@@ -16,19 +16,19 @@ import {
   parseUnits,
   zeroAddress,
 } from "viem";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useChainModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { getQuotes } from "@/lib/swapUtils/getQuotes";
 import { useToast } from "@/components/ui/use-toast";
 import { getRouteTransactionData } from "@/lib/swapUtils/getRouteTransactionData";
 import { checkAllowance } from "@/lib/swapUtils/checkAllowance";
 import { getApprovalTransactionData } from "@/lib/swapUtils/getApprovalTransactionData";
-import { getViemChain } from "@/lib/swapUtils/getViemChain";
 import { handleApprovalTransaction } from "@/lib/swapUtils/handleApprovalTransaction";
 import { handleTransactionReceipt } from "@/lib/swapUtils/handleTransactionReceipt";
 import { ToastActionWrapper } from "./ToastActionWrapper";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { estimateGasAndExecuteTxn } from "@/lib/swapUtils/estimateGasAndExecuteTxn";
+import { checkIfChainIdIsSupported } from "@/lib/swapUtils/checkIfChainIdIsSupported";
 
 export const SwapToken = ({
   initialTokenIn,
@@ -45,8 +45,10 @@ export const SwapToken = ({
   const [fetching, setFetching] = useState<boolean>(false);
   const [processingTransaction, setProcessingTransaction] =
     useState<boolean>(false);
+  const [isChainSupported, setIsChainSupported] = useState<boolean>(true);
 
   const { openConnectModal } = useConnectModal();
+  const { openChainModal } = useChainModal();
   const { isConnected, address, chainId } = useAccount();
   const { data: signer } = useWalletClient();
   const { toast } = useToast();
@@ -97,6 +99,10 @@ export const SwapToken = ({
     }
   }, [tokenInAmount, tokenIn, tokenOut]);
 
+  useEffect(() => {
+    setIsChainSupported(checkIfChainIdIsSupported(chainId!));
+  }, [chainId]);
+
   const handleSetMax = () => {
     setTokenInAmount(
       Number(formatUnits(BigInt(balance!), tokenIn?.decimals ?? 18)),
@@ -119,11 +125,19 @@ export const SwapToken = ({
     }
   };
 
+  const handleChainModal = () => {
+    if (openChainModal) {
+      if (isModal) {
+        router.back();
+      }
+      openChainModal();
+    }
+  };
+
   const handleSwap = async (route: Route, signer: WalletClient) => {
     setProcessingTransaction(true);
     try {
       const transactionData = await getRouteTransactionData(route);
-      const chain = getViemChain(chainId!);
 
       if (transactionData?.approvalData !== null) {
         const {
@@ -140,10 +154,10 @@ export const SwapToken = ({
           chainId: chainId!,
         });
 
-        const allowanceValue = allowanceCheckResult?.value!;
+        const allowanceValue = allowanceCheckResult.value;
 
         if (
-          transactionData?.approvalData.minimumApprovalAmount! > allowanceValue
+          transactionData.approvalData.minimumApprovalAmount > allowanceValue
         ) {
           toast({
             title: "Approval Required",
@@ -159,13 +173,13 @@ export const SwapToken = ({
           });
 
           let approvalTxnRes = await handleApprovalTransaction(
-            approvalTransactionData!,
+            approvalTransactionData,
             signer,
             chainId!,
           );
           toast({
-            title: approvalTxnRes.toastData.title!,
-            description: approvalTxnRes.toastData.description!,
+            title: approvalTxnRes.toastData.title,
+            description: approvalTxnRes.toastData.description,
           });
           let txnReceiptResult = await handleTransactionReceipt(
             approvalTxnRes.transactionHash,
@@ -329,7 +343,16 @@ export const SwapToken = ({
               Connect Wallet
             </Button>
           )}
-          {isConnected && (
+          {!isChainSupported && isConnected && (
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={handleChainModal}
+            >
+              Wrong Network
+            </Button>
+          )}
+          {isConnected && isChainSupported && (
             <Button
               variant={fetching ? "secondary" : "default"}
               className="w-full"

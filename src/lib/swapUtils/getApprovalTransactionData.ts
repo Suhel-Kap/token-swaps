@@ -8,7 +8,7 @@ export const getApprovalTransactionData = async ({
   chainId,
 }: ApprovalData & {
   chainId: number;
-}): Promise<TransactionData | null> => {
+}): Promise<TransactionData> => {
   try {
     const response = await fetch(
       `/api/getApprovalTransactionData?chainId=${chainId}&owner=${owner}&allowanceTarget=${allowanceTarget}&tokenAddress=${approvalTokenAddress}&amount=${minimumApprovalAmount}`,
@@ -27,6 +27,6 @@ export const getApprovalTransactionData = async ({
     return data.result as TransactionData;
   } catch (error) {
     console.error(error);
-    return null;
+    throw new Error("Error fetching approval transaction data");
   }
 };
