@@ -1,3 +1,4 @@
+import { extractSearchParams } from "@/lib/api-validation/extractSearchParams";
 import {
   BUNGEE_PUBLIC_URL,
   MATIC_ADDRESS_FOR_BUNGEE,
@@ -8,13 +9,14 @@ import { NextRequest } from "next/server";
 export const revalidate = 10;
 
 export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams;
-  const fromChainId = searchParams.get("fromChainId");
-  let fromTokenAddress = searchParams.get("fromTokenAddress");
-  const toChainId = searchParams.get("toChainId");
-  let toTokenAddress = searchParams.get("toTokenAddress");
-  const userAddress = searchParams.get("userAddress");
-  const fromAmount = searchParams.get("fromAmount");
+  let {
+    fromAmount,
+    fromChainId,
+    fromTokenAddress,
+    toChainId,
+    toTokenAddress,
+    userAddress,
+  } = extractSearchParams(req.nextUrl.searchParams);
   try {
     if (
       !fromChainId ||

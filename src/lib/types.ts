@@ -13,6 +13,7 @@ import {
 } from "lightweight-charts";
 import { Dispatch, SetStateAction } from "react";
 import { SiweMessage } from "siwe";
+import { Address } from "viem";
 
 export type TOKEN = {
   tickerName: string;
@@ -244,4 +245,18 @@ export type PageProps = {
 export type IronSession = {
   nonce: string;
   siwe: SiweMessage;
+};
+
+export type SearchParams = {
+  chainId?: number;
+  owner?: Address;
+  allowanceTarget?: Address;
+  tokenAddress?: Address;
+  amount?: string;
+  fromChainId?: number;
+  toChainId?: number;
+  fromTokenAddress?: Address;
+  toTokenAddress?: Address;
+  userAddress?: Address;
+  fromAmount?: string;
 };
