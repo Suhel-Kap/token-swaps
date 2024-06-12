@@ -79,27 +79,72 @@ Swap API routes are available in the `src/app/api/(swap)` directory. The routes 
 
 ### Home Page
 
-![Home Page](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/landing.png)
-![Connect Wallet Modal](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/connect-wallet-modal.png)
-![Sign Message Modal](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-message-modal.png)
-![Sign Mssage Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-message-wallet.png)
-![Trade Modal From Home](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-modal-from-home.png)
+|![Home Page](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/landing.png)|
+|:--:|
+| *Home Page* |
+
+|![Connect Wallet Modal](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/connect-wallet-modal.png)|
+|:--:|
+| *Connect Wallet Modal* |
+
+|![Sign Message Modal](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-message-modal.png)|
+|:--:|
+| *Sign Message Modal* |
+
+|![Sign Mssage Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-message-wallet.png)|
+|:--:|
+| *Sign Message Wallet* |
+
+|![Trade Modal From Home](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-modal-from-home.png)|
+|:--:|
+| *Trade Modal From Home* |
 
 ### Token Page
 
-![Fifteen Min Line Chart](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/fifteen-min-line-chart.png)
-![Four Hour Candle Chart Dark](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/four-hour-candle-chart-dark.png)
-![Trade Modal Filled Coin Page Dark](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-modal-filled-coin-page-dark.png)
+|![Fifteen Min Line Chart](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/fifteen-min-line-chart.png)|
+|:--:|
+| *Fifteen Min Line Chart* |
+
+|![Four Hour Candle Chart Dark](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/four-hour-candle-chart-dark.png)|
+|:--:|
+| *Four Hour Candle Chart Dark* |
+
+|![Trade Modal Filled Coin Page Dark](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-modal-filled-coin-page-dark.png)|
+|:--:|
+| *Trade Modal Filled Coin Page Dark* |
 
 ### Trade Page
 
-![Trade Page Filled](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-page-filled.png)
-![Approval Required](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approval-required.png)
-![Approve Token Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approve-token-wallet.png)
-![Approve Token Data Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approve-token-data-wallet.png)
-![Sign Required Before Swap](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-required-before-swap.png)
-![Confirm Swap Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/confirm-swap-wallet.png)
-![Swap Wait Confirmation](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/swap-wait-confirmation.png)
-![Swap Confirmed](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/swap-confirmed.png)
+|![Trade Page Filled](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-page-filled.png)|
+|:--:|
+| *Trade Page Filled* |
+
+|![Approval Required](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approval-required.png)|
+|:--:|
+| *Approval Required* |
+
+|![Approve Token Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approve-token-wallet.png)|
+|:--:|
+| *Approve Token Wallet* |
+
+|![Approve Token Data Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approve-token-data-wallet.png)|
+|:--:|
+| *Approve Token Data Wallet* |
+
+|![Sign Required Before Swap](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-required-before-swap.png)|
+|:--:|
+| *Sign Required Before Swap* |
+
+|![Confirm Swap Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/confirm-swap-wallet.png)|
+|:--:|
+| *Confirm Swap Wallet* |
+
+|![Swap Wait Confirmation](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/swap-wait-confirmation.png)|
+|:--:|
+| *Swap Wait Confirmation* |
+
+|![Swap Confirmed](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/swap-confirmed.png)|
+|:--:|
+| *Swap Confirmed* |
 
 Transaction success [URL](https://polygonscan.com/tx/0x03a827b895ed10854ef1d4f5ae4601e7f972a363341fffdca2e1cd560ccf7086)
