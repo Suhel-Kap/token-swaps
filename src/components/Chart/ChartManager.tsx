@@ -122,7 +122,7 @@ export const ChartManager = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [selectedTimeframe, liveData]);
+  }, [selectedTimeframe]);
 
   const baseLineData = prepareChartData(ohlcData, prepareLineChartData);
   const candleStickData = prepareChartData(
