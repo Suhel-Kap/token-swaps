@@ -1,4 +1,4 @@
-import { ChartPlaceholder } from "@/components/ChartPlaceholder";
+import { Chart } from "@/components/Chart";
 import { CoinDetails } from "@/components/CoinDetails";
 import { Button } from "@/components/ui/button";
 import { PageProps } from "@/lib/types";
@@ -15,7 +15,7 @@ export default function Coin({ params }: PageProps) {
           </Link>
         </div>
       </div>
-      <ChartPlaceholder tickerName={params.tickerName} />
+      <Chart tickerName={params.tickerName} />
     </div>
   );
 }

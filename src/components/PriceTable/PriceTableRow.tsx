@@ -11,12 +11,15 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
   // callling getAllTickers because we can fetch all token balances in one single API call to Kraken
   // and cache the responses for different tokens
   const price = await getAllTickers();
-  const priceIncreased = (price?.[token.tickerName].percentage as number) > 0;
+  const priceIncreased = (price[token.tickerName].percentage as number) >= 0;
+
+  const coinUrl = `/coin/${token.tickerName}`;
+  const tradeUrl = `/trade/${token.tickerName}`;
 
   return (
     <TableRow>
       <TableCell>
-        <Link href={`/coin/${token.tickerName}`}>
+        <Link href={coinUrl}>
           <div className="flex place-items-center gap-1">
             <Image
               alt={token.displayName}
@@ -29,7 +32,7 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
         </Link>
       </TableCell>
       <TableCell>
-        <Link href={`/coin/${token.tickerName}`}>
+        <Link href={coinUrl}>
           <p className="w-full">{token.symbol}</p>
         </Link>
       </TableCell>
@@ -39,10 +42,9 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
           `${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`,
         )}
       >
-        <Link href={`/coin/${token.tickerName}`}>
+        <Link href={coinUrl}>
           <p className="w-full">
-            {" "}
-            ${parseFloat(price?.[token.tickerName].price as string).toFixed(2)}
+            ${parseFloat(price[token.tickerName].price as string).toFixed(2)}
           </p>
         </Link>
       </TableCell>
@@ -52,15 +54,15 @@ export default async function PriceTableRow({ token }: { token: TOKEN }) {
           `${priceIncreased ? "text-[#14c684]" : "text-[#eb3843]"}`,
         )}
       >
-        <Link href={`/coin/${token.tickerName}`}>
+        <Link href={coinUrl}>
           <div className="flex place-items-center w-full">
             <p>{priceIncreased ? <AiFillCaretUp /> : <AiFillCaretDown />}</p>
-            <p>{price?.[token.tickerName].percentage.toFixed(2)}%</p>
+            <p>{Math.abs(price[token.tickerName].percentage).toFixed(2)}%</p>
           </div>
         </Link>
       </TableCell>
       <TableCell>
-        <Link href={`/trade/${token.tickerName}`}>
+        <Link href={tradeUrl}>
           <Button>Trade</Button>
         </Link>
       </TableCell>

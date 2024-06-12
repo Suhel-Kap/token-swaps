@@ -50,7 +50,5 @@ const prepareData = (data: TickerApiResponse) => {
 export const getAllTickers = async () => {
   const pairs = TOKEN_PAIRS.map((pair) => pair.tickerName).join(",");
   const res = await getTicker(pairs);
-  if (res) {
-    return prepareData(res);
-  }
+  return prepareData(res);
 };

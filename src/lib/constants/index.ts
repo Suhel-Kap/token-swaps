@@ -3,15 +3,6 @@ import { TOKEN } from "../types";
 
 export const TOKEN_PAIRS: TOKEN[] = [
   {
-    tickerName: "WBTCUSD",
-    wsName: "BTC/USD",
-    displayName: "Wrapped Bitcoin",
-    symbol: "WBTC",
-    chainId: 137,
-    tokenAddress: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
-    decimals: 8,
-  },
-  {
     tickerName: "ETHUSDT",
     wsName: "ETH/USD",
     displayName: "Wrapped Ethereum",
@@ -19,6 +10,15 @@ export const TOKEN_PAIRS: TOKEN[] = [
     chainId: 137,
     tokenAddress: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
     decimals: 18,
+  },
+  {
+    tickerName: "WBTCUSD",
+    wsName: "BTC/USD",
+    displayName: "Wrapped Bitcoin",
+    symbol: "WBTC",
+    chainId: 137,
+    tokenAddress: "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
+    decimals: 8,
   },
   {
     tickerName: "MATICUSD",

@@ -1,6 +1,6 @@
 import { ToastAction } from "../ui/toast";
 
-export const MyToast = ({ url }: { url: string }) => {
+export const ToastActionWrapper = ({ url }: { url: string }) => {
   return (
     <ToastAction
       altText="View on explorer"

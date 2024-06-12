@@ -8,7 +8,7 @@ export const getOhlcData = async (
   pair: string,
   interval = 15,
   since?: number,
-): Promise<OHLCApiResponse | null> => {
+): Promise<OHLCApiResponse> => {
   try {
     const response = await fetch(
       `${KRAKEN_PUBLIC_URL}/OHLC?pair=${pair}&interval=${interval}${since ? `&since=${since}` : ""}`,
@@ -26,6 +26,6 @@ export const getOhlcData = async (
     return data as OHLCApiResponse;
   } catch (error) {
     console.error(error);
-    return null;
+    throw new Error("Failed to fetch ohlc data");
   }
 };

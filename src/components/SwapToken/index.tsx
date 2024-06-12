@@ -5,7 +5,7 @@ import { FaArrowDownLong, FaGasPump } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Route, SwapTokenProps, TOKEN } from "@/lib/types";
+import { Route, SwapTokenProps, TOKEN, TransactionData } from "@/lib/types";
 import { TokenInput } from "./TokenInput";
 import { useAccount, useWalletClient } from "wagmi";
 import { getBalance } from "@/lib/swapUtils/getBalance";
@@ -25,13 +25,13 @@ import { getRouteTransactionData } from "@/lib/swapUtils/getRouteTransactionData
 import { checkAllowance } from "@/lib/swapUtils/checkAllowance";
 import { getApprovalTransactionData } from "@/lib/swapUtils/getApprovalTransactionData";
 import { getPublicClient } from "@/lib/swapUtils/getPublicClient";
-import { ToastAction } from "@/components/ui/toast";
 import { getViemChain } from "@/lib/swapUtils/getViemChain";
 import { handleApprovalTransaction } from "@/lib/swapUtils/handleApprovalTransaction";
 import { handleTransactionReceipt } from "@/lib/swapUtils/handleTransactionReceipt";
-import { MyToast } from "./MyToast";
+import { ToastActionWrapper } from "./ToastActionWrapper";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { estimateGasAndExecuteTxn } from "@/lib/swapUtils/estimateGasAndExecuteTxn";
 
 export const SwapToken = ({
   initialTokenIn,
@@ -100,6 +100,28 @@ export const SwapToken = ({
     }
   }, [tokenInAmount, tokenIn, tokenOut]);
 
+  const handleSetMax = () => {
+    setTokenInAmount(
+      Number(formatUnits(BigInt(balance!), tokenIn?.decimals ?? 18)),
+    );
+  };
+
+  const swapTokenInWithTokenOut = () => {
+    setTokenIn(tokenOut);
+    setTokenOut(tokenIn);
+    setTokenInAmount(tokenOutAmount);
+    setTokenOutAmount(tokenInAmount);
+  };
+
+  const handleConnectWallet = () => {
+    if (openConnectModal) {
+      if (isModal) {
+        router.back();
+      }
+      openConnectModal();
+    }
+  };
+
   const handleSwap = async (route: Route, signer: WalletClient) => {
     setProcessingTransaction(true);
     try {
@@ -156,39 +178,34 @@ export const SwapToken = ({
           toast({
             title: txnReceiptResult?.toastData.title!,
             description: txnReceiptResult?.toastData.description!,
-            action: <MyToast url={txnReceiptResult?.toastData.url!} />,
+            action: (
+              <ToastActionWrapper url={txnReceiptResult?.toastData.url!} />
+            ),
           });
+          if (txnReceiptResult?.status === "reverted") {
+            throw new Error("Approval transaction reverted");
+          }
         }
       }
-
-      const publicClient = getPublicClient(chainId!);
-      const gasPrice = (await publicClient.getGasPrice()) + parseGwei("10");
-      const value = tokenIn?.isNative
-        ? parseEther(tokenInAmount.toString())
-        : BigInt(0);
-
-      const gasEstimate = await publicClient.estimateGas({
-        account: address as Address,
-        to: transactionData?.txTarget! as Address,
-        data: transactionData?.txData! as Address,
-        value,
-        gasPrice: gasPrice,
-      });
 
       toast({
         title: "Signature Required",
         description: "Please sign the transaction to continue",
       });
 
-      const transactionHash = await signer.sendTransaction({
-        account: address as Address,
-        to: transactionData?.txTarget! as Address,
-        data: transactionData?.txData! as Address,
-        value,
-        gasPrice: gasPrice,
-        gasLimit: gasEstimate,
-        chain,
-      });
+      const value = tokenIn?.isNative
+        ? parseEther(tokenInAmount.toString())
+        : BigInt(0);
+
+      const transactionHash = await estimateGasAndExecuteTxn(
+        {
+          to: transactionData?.txTarget!,
+          data: transactionData?.txData!,
+          value: value.toString(),
+        } as TransactionData,
+        signer,
+        chainId!,
+      );
 
       toast({
         title: "Transaction Sent",
@@ -203,7 +220,7 @@ export const SwapToken = ({
       toast({
         title: swapTxnRes?.toastData.title!,
         description: swapTxnRes?.toastData.description!,
-        action: <MyToast url={swapTxnRes?.toastData.url!} />,
+        action: <ToastActionWrapper url={swapTxnRes?.toastData.url!} />,
       });
     } catch (error) {
       console.error(error);
@@ -213,6 +230,31 @@ export const SwapToken = ({
       });
     }
     setProcessingTransaction(false);
+  };
+
+  const handlePressSwap = () => {
+    if (signer && route !== null) {
+      // check if the user has enough balance
+      const amount = parseUnits(
+        tokenInAmount.toString() as string,
+        tokenIn?.decimals ?? 18,
+      );
+      if (BigInt(balance!) < amount) {
+        toast({
+          duration: 5000,
+          variant: "destructive",
+          title: "Insufficient balance",
+        });
+        return;
+      }
+      handleSwap(route, signer);
+    } else if (signer && route === null) {
+      toast({
+        duration: 5000,
+        variant: "destructive",
+        title: "Please enter an amount and choose tokens",
+      });
+    }
   };
 
   return (
@@ -243,13 +285,7 @@ export const SwapToken = ({
                 ).toPrecision(2)}
               </p>
               <Button
-                onClick={() => {
-                  setTokenInAmount(
-                    Number(
-                      formatUnits(BigInt(balance), tokenIn?.decimals ?? 18),
-                    ),
-                  );
-                }}
+                onClick={handleSetMax}
                 className="h-5 p-2"
                 variant="ghost"
               >
@@ -261,12 +297,7 @@ export const SwapToken = ({
         <div className="flex justify-center relative mt-10 mb-6">
           <Separator />
           <Button
-            onClick={() => {
-              setTokenIn(tokenOut);
-              setTokenOut(tokenIn);
-              setTokenInAmount(tokenOutAmount);
-              setTokenOutAmount(tokenInAmount);
-            }}
+            onClick={swapTokenInWithTokenOut}
             variant="outline"
             className="absolute top-[-18px]"
           >
@@ -296,14 +327,7 @@ export const SwapToken = ({
             <Button
               variant="secondary"
               className="w-full"
-              onClick={() => {
-                if (openConnectModal) {
-                  if (isModal) {
-                    router.back();
-                  }
-                  openConnectModal();
-                }
-              }}
+              onClick={handleConnectWallet}
             >
               Connect Wallet
             </Button>
@@ -312,30 +336,7 @@ export const SwapToken = ({
             <Button
               variant={fetching ? "secondary" : "default"}
               className="w-full"
-              onClick={() => {
-                if (signer && route !== null) {
-                  // check if the user has enough balance
-                  const amount = parseUnits(
-                    tokenInAmount.toString() as string,
-                    tokenIn?.decimals ?? 18,
-                  );
-                  if (BigInt(balance!) < amount) {
-                    toast({
-                      duration: 5000,
-                      variant: "destructive",
-                      title: "Insufficient balance",
-                    });
-                    return;
-                  }
-                  handleSwap(route, signer);
-                } else if (signer && route === null) {
-                  toast({
-                    duration: 5000,
-                    variant: "destructive",
-                    title: "Please enter an amount and choose tokens",
-                  });
-                }
-              }}
+              onClick={handlePressSwap}
               disabled={fetching || processingTransaction}
             >
               {fetching

@@ -44,6 +44,7 @@ export const ChartManager = ({
     initialData,
   ]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [wsOpen, setWsOpen] = useState(false);
   const [liveData, setLiveData] = useState<{
     lineChartData: Array<LineChartItem>;
     candleStickChartData: Array<CandleStickChartItem>;
@@ -67,11 +68,13 @@ export const ChartManager = ({
     };
 
     setSocket(ws);
+    setWsOpen(true);
   };
 
   const closeWs = () => {
     if (socket) {
       socket.close();
+      setWsOpen(false);
     }
   };
 
@@ -109,13 +112,17 @@ export const ChartManager = ({
   }, [initialData, tickerName]);
 
   useEffect(() => {
-    if (socket) {
+    let timer: NodeJS.Timeout;
+    if (wsOpen) {
       closeWs();
-      setTimeout(() => {
+      timer = setTimeout(() => {
         openWs();
       }, 1000);
     }
-  }, [selectedTimeframe]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [selectedTimeframe, liveData]);
 
   const baseLineData = prepareChartData(ohlcData, prepareLineChartData);
   const candleStickData = prepareChartData(
