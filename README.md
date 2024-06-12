@@ -13,7 +13,7 @@ git clone https://github.com/Suhel-Kap/token-swaps.git
 2. Copy the `.env.example` file to `.env.local` and fill in the required details
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 3. Install the dependencies
@@ -49,13 +49,13 @@ http://localhost:3000
 
 - See token history at a glance on the home page. Here, users can see the current price of the token, the price change in the last 24 hours.
 - Upon navigating to the token page, users can see the token history in an interactive way. They are presented with the option to see the token performance in the past 1 minute, 15 minutes, 1 hour, 4 hours, 1 day and 1 week in a line chart or candlestick chart.
-- A "Live Mode" button is available on the token page that enables users to see the token price updates in real time. The prices are udpated in real time based on the time interval selected by the user. A websocket connection is estabilshed with Kraken to get the real time price updates.
+- A "Live Mode" button is available on the token page that enables users to see the token price updates in real time. The prices are updated in real time based on the time interval selected by the user. A websocket connection is estabilshed with Kraken to get the real time price updates.
 - Users can navigate to the "Trade" page from the landing page or the token page.
 - Next JS's intercepting and parallel routing features are used to give a seamless UX, wherein on clicking the "Trade" button a modal is opened that shows the trade dialog. It seems to the user that the page has not changed, but in reality, the user has been navigated to the "Trade" page. This enables users to even share the link to the trade page while still being on the token page or the landing page.
-- Users can swap tokens on the Polygon network. The routing is facilitated using Bungee APIs to get the transaction data based on the user input. Once the user agrees to move ahead with the transaciton, the data returned from Bungee API is passed to the Viem library to execute the transaction on the Polygon network.
-- Users need to be connected to their wallets to execute the transaction. The wallet connection is facilitated using the Rainbow Kit library. Upon connecting the wallet, the user is prompted to sign a message to authenticate themselves. This is done using the SIWE library.
+- Users can swap tokens on the Polygon network. The routing is facilitated using Bungee APIs to get the transaction data based on the user input. Once the user agrees to move ahead with the transaciton, the data returned from Bungee API is passed to the signer object which is an instance of Viem library to execute the transaction on the connected network.
+- Users need to be connected to their wallets to execute the transaction. The wallet connection is facilitated using the Rainbow Kit library. Upon connecting the wallet, the user is prompted to sign a message to authenticate themselves. This is done using the SIWE library. Once the user has signed the message, the session is created using Iron Session and is used in the subsequent API routes to ensure that the user is authenticated.
 - The swap API route utilises the authentication provided by Iron Session to ensure that only authenticated users can execute the transaction.
-- Dark mode / light mode is available for the users to toggle between the two modes. The system preference is used to set the default mode for the user.
+- Dark mode / light mode switch is available for the users to toggle between the two modes. The system preference is used to set the default mode for the user.
 - The app is responsive and works well on mobile devices as well.
 
 ## API Routes
@@ -63,7 +63,7 @@ http://localhost:3000
 User authentication routes are available in the `src/app/api/(auth)` directory. The routes are as follows:
 
 - `/api/nonce` - This route is used to get the nonce from the SIWE library for the user to sign and authenticate themselves.
-- `/api/verify` - This route is used to verify that the signature was made over the nonce provided by the server.
+- `/api/verify` - This route is used to verify that the signature was made over the nonce provided by the server. If verified, the session is created and stored using Iron Session.
 - `/api/me` - This route is used to get the user's address from the Iron Session after they have authenticated themselves. This is used at the time of page load to check if the user is authenticated.
 - `/api/logout` - This route is used to log the user out of the session.
 
