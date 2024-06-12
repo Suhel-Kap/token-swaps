@@ -24,10 +24,6 @@ export const ErrorComponent = ({
       >
         Refresh Page
       </Button>
-      <Separator className="w-1/4 my-3" />
-      <Button variant={"secondary"} onClick={() => reset()}>
-        Try again
-      </Button>
     </div>
   );
 };

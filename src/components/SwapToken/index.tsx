@@ -10,11 +10,9 @@ import { TokenInput } from "./TokenInput";
 import { useAccount, useWalletClient } from "wagmi";
 import { getBalance } from "@/lib/swapUtils/getBalance";
 import {
-  Address,
   WalletClient,
   formatUnits,
   parseEther,
-  parseGwei,
   parseUnits,
   zeroAddress,
 } from "viem";
@@ -24,7 +22,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { getRouteTransactionData } from "@/lib/swapUtils/getRouteTransactionData";
 import { checkAllowance } from "@/lib/swapUtils/checkAllowance";
 import { getApprovalTransactionData } from "@/lib/swapUtils/getApprovalTransactionData";
-import { getPublicClient } from "@/lib/swapUtils/getPublicClient";
 import { getViemChain } from "@/lib/swapUtils/getViemChain";
 import { handleApprovalTransaction } from "@/lib/swapUtils/handleApprovalTransaction";
 import { handleTransactionReceipt } from "@/lib/swapUtils/handleTransactionReceipt";

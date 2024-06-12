@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     );
 
     if (
-      isAddressEqual(
+      !isAddressEqual(
         session.siwe?.address as Address,
         body.route.sender as Address,
       )
