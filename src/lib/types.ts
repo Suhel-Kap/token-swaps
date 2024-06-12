@@ -10,6 +10,7 @@ import {
   SeriesOptionsCommon,
   Time,
   WhitespaceData,
+  createChart,
 } from "lightweight-charts";
 import { Dispatch, SetStateAction } from "react";
 import { SiweMessage } from "siwe";
@@ -260,3 +261,18 @@ export type SearchParams = {
   userAddress?: Address;
   fromAmount?: string;
 };
+
+export type ChartData = {
+  time: Time;
+  [key: string]: any;
+};
+
+export interface ChartContainerProps<T extends ChartData> {
+  data: Array<T>;
+  additionalData?: Array<T>;
+  chartOptions: {
+    addSeries: (chart: ReturnType<typeof createChart>) => any;
+    barSpacing?: number;
+    updateSeries: (series: any, data: T) => void;
+  };
+}
