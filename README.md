@@ -56,6 +56,7 @@ http://localhost:3000
 - Users need to be connected to their wallets to execute the transaction. The wallet connection is facilitated using the Rainbow Kit library. Upon connecting the wallet, the user is prompted to sign a message to authenticate themselves. This is done using the SIWE library.
 - The swap API route utilises the authentication provided by Iron Session to ensure that only authenticated users can execute the transaction.
 - Dark mode / light mode is available for the users to toggle between the two modes. The system preference is used to set the default mode for the user.
+- The app is responsive and works well on mobile devices as well.
 
 ## API Routes
 
@@ -75,5 +76,30 @@ Swap API routes are available in the `src/app/api/(swap)` directory. The routes 
 
 
 ## Screenshots
+
+### Home Page
+
+![Home Page](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/landing.png)
+![Connect Wallet Modal](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/connect-wallet-modal.png)
+![Sign Message Modal](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-message-modal.png)
+![Sign Mssage Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-message-wallet.png)
+![Trade Modal From Home](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-modal-from-home.png)
+
+### Token Page
+
+![Fifteen Min Line Chart](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/fifteen-min-line-chart.png)
+![Four Hour Candle Chart Dark](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/four-hour-candle-chart-dark.png)
+![Trade Modal Filled Coin Page Dark](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-modal-filled-coin-page-dark.png)
+
+### Trade Page
+
+![Trade Page Filled](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/trade-page-filled.png)
+![Approval Required](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approval-required.png)
+![Approve Token Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approve-token-wallet.png)
+![Approve Token Data Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/approve-token-data-wallet.png)
+![Sign Required Before Swap](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/sign-required-before-swap.png)
+![Confirm Swap Wallet](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/confirm-swap-wallet.png)
+![Swap Wait Confirmation](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/swap-wait-confirmation.png)
+![Swap Confirmed](https://raw.githubusercontent.com/Suhel-Kap/token-swaps/main/public/screenshots/swap-confirmed.png)
 
 Transaction success [URL](https://polygonscan.com/tx/0x03a827b895ed10854ef1d4f5ae4601e7f972a363341fffdca2e1cd560ccf7086)
